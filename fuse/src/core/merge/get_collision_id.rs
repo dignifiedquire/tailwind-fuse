@@ -127,9 +127,25 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         // https://tailwindcss.com/docs/position
         ["static"] | ["fixed"] | ["absolute"] | ["relative"] | ["sticky"] => Ok("position"),
 
+        // v4: Inset shadow
+        ["inset", "shadow"] | ["inset", "shadow", "none"] if arbitrary.is_empty() => Ok("inset-shadow"),
+        ["inset", "shadow", size] if is_t_shirt_size(size) => Ok("inset-shadow"),
+        ["inset", "shadow", ..] => Ok("inset-shadow-color"),
+
+        // v4: Inset ring
+        ["inset", "ring"] if arbitrary.is_empty() => Ok("inset-ring-width"),
+        ["inset", "ring", rest] if rest.parse::<usize>().is_ok() => Ok("inset-ring-width"),
+        ["inset", "ring"] if !arbitrary.is_empty() => Ok("inset-ring-width"),
+        ["inset", "ring", ..] => Ok("inset-ring-color"),
+
         // https://tailwindcss.com/docs/top-right-bottom-left
         ["inset", "x", rest @ ..] => valid_trbl(rest, arbitrary, "inset-x", "Invalid inset-x"),
         ["inset", "y", rest @ ..] => valid_trbl(rest, arbitrary, "inset-y", "Invalid inset-y"),
+        // v4: Logical inset
+        ["inset", "s", ..] => Ok("inset-start"),
+        ["inset", "e", ..] => Ok("inset-end"),
+        ["inset", "bs", ..] => Ok("inset-block-start"),
+        ["inset", "be", ..] => Ok("inset-block-end"),
         ["inset", rest @ ..] => valid_trbl(rest, arbitrary, "inset", "Invalid inset"),
         ["top", rest @ ..] => valid_trbl(rest, arbitrary, "top", "Invalid top"),
         ["right", rest @ ..] => valid_trbl(rest, arbitrary, "right", "Invalid right"),
@@ -264,6 +280,11 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["pb", ..] => Ok("padding-bottom"),
         ["px", ..] => Ok("padding-x"),
         ["py", ..] => Ok("padding-y"),
+        // v4: Logical padding
+        ["ps", ..] => Ok("padding-start"),
+        ["pe", ..] => Ok("padding-end"),
+        ["pbs", ..] => Ok("padding-block-start"),
+        ["pbe", ..] => Ok("padding-block-end"),
 
         // https:: //tailwindcss.com/docs/margin
         ["m", ..] => Ok("margin"),
@@ -275,6 +296,9 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["my", ..] => Ok("margin-y"),
         ["ms", ..] => Ok("margin-start"),
         ["me", ..] => Ok("margin-end"),
+        // v4: Logical margin
+        ["mbs", ..] => Ok("margin-block-start"),
+        ["mbe", ..] => Ok("margin-block-end"),
 
         // https://tailwindcss.com/docs/space
         ["space", "x", "reverse"] => Ok("space-x-reverse"),
@@ -293,6 +317,12 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         // https://tailwindcss.com/docs/max-width
         ["max", "w", ..] => Ok("max-width"),
 
+        // v4: Logical sizing (must be before min/max-height to not clash)
+        ["min", "inline", ..] => Ok("min-inline-size"),
+        ["max", "inline", ..] => Ok("max-inline-size"),
+        ["min", "block", ..] => Ok("min-block-size"),
+        ["max", "block", ..] => Ok("max-block-size"),
+
         // https://tailwindcss.com/docs/height
         ["h", ..] => Ok("height"),
 
@@ -304,6 +334,11 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
 
         // https://tailwindcss.com/docs/size
         ["size", ..] => Ok("size"),
+
+        // v4: Logical sizing (inline/block)
+        // Note: ["inline"] and ["block"] alone are display (matched above)
+        ["inline", ..] => Ok("inline-size"),
+        ["block", ..] => Ok("block-size"),
 
         // https://tailwindcss.com/docs/font-family
         // TODO: This clash is bad
@@ -321,6 +356,11 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         // https://tailwindcss.com/docs/font-size
         ["text", rest] if valid_text_size(rest) => Ok("font-size"),
         ["text"] if is_arbitrary_len(arbitrary) => Ok("font-size"),
+
+        // v4: Text shadow
+        ["text", "shadow"] | ["text", "shadow", "none"] if arbitrary.is_empty() => Ok("text-shadow"),
+        ["text", "shadow", size] if is_t_shirt_size(size) => Ok("text-shadow"),
+        ["text", "shadow", ..] => Ok("text-shadow-color"),
 
         // https://tailwindcss.com/docs/text-color
         ["text", ..] => Ok("text-color"),
@@ -411,6 +451,13 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         // https://tailwindcss.com/docs/hyphens
         ["hyphens", "none" | "manual" | "auto"] => Ok("hyphens"),
 
+        // v4: Wrap (overflow-wrap)
+        ["wrap", "normal" | "anywhere"] => Ok("wrap"),
+        ["wrap", "break", "word"] => Ok("wrap"),
+
+        // v4: Placeholder color
+        ["placeholder", ..] => Ok("placeholder-color"),
+
         // https://tailwindcss.com/docs/content
         ["content", "none"] => Ok("content"),
         ["content"] if is_arbitrary_value(arbitrary) => Ok("content"),
@@ -448,7 +495,8 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["bg"] if is_arbitrary_size(arbitrary) => Ok("background-size"),
 
         // https://tailwindcss.com/docs/background-image
-        ["bg", "none"] | ["bg", "gradient", "to", ..] => Ok("background-image"),
+        ["bg", "none"] | ["bg", "gradient", "to", ..]
+        | ["bg", "linear", ..] | ["bg", "radial", ..] | ["bg", "conic", ..] => Ok("background-image"),
         ["bg"] if is_arbitrary_bg_image(arbitrary) => Ok("background-image"),
 
         // https://tailwindcss.com/docs/background-blend-mode
@@ -500,6 +548,11 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["border", "l"] if arbitrary.is_empty() || is_arbitrary_len(arbitrary) => Ok("border-w-l"),
         ["border", "s", rest] if is_valid_length(rest) => Ok("border-w-s"),
         ["border", "s"] if arbitrary.is_empty() || is_arbitrary_len(arbitrary) => Ok("border-w-s"),
+        // v4: Logical border width (block-start/block-end)
+        ["border", "bs", rest] if is_valid_length(rest) => Ok("border-w-bs"),
+        ["border", "bs"] if arbitrary.is_empty() || is_arbitrary_len(arbitrary) => Ok("border-w-bs"),
+        ["border", "be", rest] if is_valid_length(rest) => Ok("border-w-be"),
+        ["border", "be"] if arbitrary.is_empty() || is_arbitrary_len(arbitrary) => Ok("border-w-be"),
         ["border", rest] if is_valid_length(rest) => Ok("border-w"),
         ["border"] if arbitrary.is_empty() || is_arbitrary_len(arbitrary) => Ok("border-w"),
 
@@ -522,6 +575,9 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["border", "l", ..] => Ok("border-color-l"),
         ["border", "s", ..] => Ok("border-color-s"),
         ["border", "e", ..] => Ok("border-color-e"),
+        // v4: Logical border color
+        ["border", "bs", ..] => Ok("border-color-bs"),
+        ["border", "be", ..] => Ok("border-color-be"),
         ["border", "x", ..] => Ok("border-color-x"),
         ["border", "y", ..] => Ok("border-color-y"),
         ["border", ..] => Ok("border-color"),
@@ -600,7 +656,9 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["contrast", ..] => Ok("contrast"),
 
         // https://tailwindcss.com/docs/drop-shadow
-        ["drop", "shadow", ..] => Ok("drop-shadow"),
+        ["drop", "shadow"] | ["drop", "shadow", "none"] if arbitrary.is_empty() => Ok("drop-shadow"),
+        ["drop", "shadow", size] if is_t_shirt_size(size) => Ok("drop-shadow"),
+        ["drop", "shadow", ..] => Ok("drop-shadow-color"),
 
         // https://tailwindcss.com/docs/grayscale
         ["grayscale", ..] => Ok("grayscale"),
@@ -672,21 +730,34 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["scale", "x"] if arbitrary.parse::<usize>().is_ok() => Ok("scale-x"),
         ["scale", "y", rest] if rest.parse::<usize>().is_ok() => Ok("scale-y"),
         ["scale", "y"] if arbitrary.parse::<usize>().is_ok() => Ok("scale-y"),
+        // v4: 3D scale
+        ["scale", "z", ..] => Ok("scale-z"),
         ["scale", rest] if rest.parse::<usize>().is_ok() => Ok("scale"),
         // [1.75] is valid
         ["scale"] if arbitrary.parse::<f32>().is_ok() => Ok("scale"),
 
         // https://tailwindcss.com/docs/rotate
+        // v4: 3D rotation
+        ["rotate", "x", ..] => Ok("rotate-x"),
+        ["rotate", "y", ..] => Ok("rotate-y"),
+        ["rotate", "z", ..] => Ok("rotate-z"),
         ["rotate", rest] if rest.parse::<usize>().is_ok() => Ok("rotate"),
         ["rotate"] if arbitrary.parse::<usize>().is_ok() => Ok("rotate"),
 
         // https://tailwindcss.com/docs/translate
         ["translate", "x", ..]  => Ok("translate-x"),
         ["translate", "y", ..]  => Ok("translate-y"),
+        // v4: 3D translation
+        ["translate", "z", ..] => Ok("translate-z"),
 
         // https://tailwindcss.com/docs/skew
         ["skew", "x", ..]  => Ok("skew-x"),
         ["skew", "y", ..]  => Ok("skew-y"),
+
+        // v4: 3D transform utilities
+        ["perspective", ..] => Ok("perspective"),
+        ["transform", "3d" | "flat"] => Ok("transform-style"),
+        ["backface", "visible" | "hidden"] => Ok("backface"),
 
         // https://tailwindcss.com/docs/transform-origin
         ["origin", ..] => Ok("transform-origin"),
@@ -752,6 +823,12 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["stroke", ..]=> {
             Ok("stroke")
         },
+
+        // v4: Field sizing
+        ["field", "sizing", "content" | "fixed"] => Ok("field-sizing"),
+
+        // v4: Color scheme
+        ["scheme", ..] => Ok("color-scheme"),
 
         // https://tailwindcss.com/docs/screen-readers
         ["sr", "only"] | ["not", "sr", "only"] => Ok("screen-readers"),
