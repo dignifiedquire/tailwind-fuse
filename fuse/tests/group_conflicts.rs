@@ -159,6 +159,53 @@ fn ring_and_shadow_classes_do_not_create_conflict() {
 }
 
 #[test]
+fn ring_width_classes_merge_correctly() {
+    // ring width conflicts with ring width
+    assert_eq!(tw_merge("ring-1 ring-2"), "ring-2");
+    assert_eq!(tw_merge("ring ring-2"), "ring-2");
+    assert_eq!(tw_merge("ring-2 ring"), "ring");
+}
+
+#[test]
+fn ring_color_classes_merge_correctly() {
+    assert_eq!(
+        tw_merge("ring-red-500 ring-blue-500"),
+        "ring-blue-500"
+    );
+}
+
+#[test]
+fn ring_width_and_color_do_not_conflict() {
+    // ring width and ring color are different groups
+    assert_eq!(tw_merge("ring ring-red-500"), "ring ring-red-500");
+    assert_eq!(
+        tw_merge("ring-2 ring-blue-500"),
+        "ring-2 ring-blue-500"
+    );
+}
+
+#[test]
+fn ring_inset_does_not_conflict_with_ring_width() {
+    // Issue #28: ring-inset should NOT conflict with ring width
+    assert_eq!(
+        tw_merge("ring-1 ring-inset"),
+        "ring-1 ring-inset"
+    );
+    assert_eq!(
+        tw_merge("ring-inset ring-2"),
+        "ring-inset ring-2"
+    );
+}
+
+#[test]
+fn ring_arbitrary_values() {
+    assert_eq!(
+        tw_merge("ring-[3px] ring-primary"),
+        "ring-[3px] ring-primary"
+    );
+}
+
+#[test]
 fn touch_classes_do_create_conflicts_correctly() {
     assert_eq!(tw_merge("touch-pan-x touch-pan-right"), "touch-pan-right");
     assert_eq!(tw_merge("touch-none touch-pan-x"), "touch-pan-x");
