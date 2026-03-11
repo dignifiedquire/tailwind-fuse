@@ -29,13 +29,18 @@ fn parse_style<'a>(
     input: &'a str,
     options: &AstParseOptions<'a>,
 ) -> IResult<&'a str, AstStyle<'a>> {
-    let (rest, (variants, important, negative, elements, arbitrary)) = tuple((
-        many0(|s| parse_variant(options.separator, s)),
-        opt(char('!')),
-        opt(char('-')),
-        opt(|s| parse_elements(options.prefix, s)),
-        opt(parse_arbitrary),
-    ))(input)?;
+    let (rest, (variants, important_prefix, negative, elements, arbitrary, important_suffix)) =
+        tuple((
+            many0(|s| parse_variant(options.separator, s)),
+            opt(char('!')),
+            opt(char('-')),
+            opt(|s| parse_elements(options.prefix, s)),
+            opt(alt((
+                parse_arbitrary as fn(&'a str) -> IResult<&'a str, &'a str>,
+                parse_paren_arbitrary,
+            ))),
+            opt(char('!')),
+        ))(input)?;
 
     let source = &input[..input.len() - rest.len()];
 
@@ -52,7 +57,7 @@ fn parse_style<'a>(
         rest,
         AstStyle {
             source,
-            important: important.is_some(),
+            important: important_prefix.is_some() || important_suffix.is_some(),
             negative: negative.is_some(),
             variants,
             elements: elements.unwrap_or_default().elements,
@@ -66,8 +71,7 @@ fn parse_elements<'a>(prefix: &'a str, input: &'a str) -> IResult<&'a str, AstEl
     #[inline]
     fn parse_head(input: &str) -> IResult<&str, &str> {
         let stop = |c: char| -> bool {
-            // space
-            matches!(c, ' ' | '\n' | '\r' | '-' | '[' | ']' | '(' | ')')
+            matches!(c, ' ' | '\n' | '\r' | '-' | '[' | ']' | '(' | ')' | '!')
         };
         take_till1(stop)(input)
     }
@@ -88,6 +92,8 @@ fn parse_variant<'a>(separator: &'a str, input: &'a str) -> IResult<&'a str, AST
     let parser = alt((
         parse_data_attribute_variant,
         parse_arbitrary_attribute_variant,
+        parse_container_query_arbitrary_variant,
+        parse_star_variant,
         parse_normal_variant,
     ));
 
@@ -98,8 +104,27 @@ fn parse_variant<'a>(separator: &'a str, input: &'a str) -> IResult<&'a str, AST
 // https://tailwindcss.com/docs/hover-focus-and-other-states#using-arbitrary-variants
 #[inline]
 fn parse_normal_variant(input: &str) -> IResult<&str, ASTVariant<'_>> {
-    let parser = take_while1(|c: char| c.is_alphanumeric() || c == '-');
+    // v4: allow @ prefix for container query variants like @sm, @md, @lg
+    let parser = take_while1(|c: char| c.is_alphanumeric() || c == '-' || c == '@');
     let (rest, result) = parser(input)?;
+    Ok((rest, ASTVariant::Normal(result)))
+}
+
+/// v4: Container query arbitrary variant like @[500px]
+#[inline]
+fn parse_container_query_arbitrary_variant(input: &str) -> IResult<&str, ASTVariant<'_>> {
+    let (rest, _) = tuple((
+        tag("@"),
+        delimited(tag("["), take_until_unbalanced('[', ']'), tag("]")),
+    ))(input)?;
+    let entire_variant = &input[..input.len() - rest.len()];
+    Ok((rest, ASTVariant::Normal(entire_variant)))
+}
+
+/// v4: Star variants (* for direct children, ** for all descendants)
+#[inline]
+fn parse_star_variant(input: &str) -> IResult<&str, ASTVariant<'_>> {
+    let (rest, result) = alt((tag("**"), tag("*")))(input)?;
     Ok((rest, ASTVariant::Normal(result)))
 }
 
@@ -126,6 +151,14 @@ fn parse_arbitrary_attribute_variant(input: &str) -> IResult<&str, ASTVariant<'_
 #[inline]
 fn parse_arbitrary(input: &str) -> IResult<&str, &str> {
     let parser = delimited(tag("["), take_until_unbalanced('[', ']'), tag("]"));
+    let (rest, (_, arbitrary)) = tuple((opt(char('-')), parser))(input)?;
+    Ok((rest, arbitrary))
+}
+
+/// v4: Parenthesized arbitrary values like `w-(--my-width)` or `bg-(--my-color)`
+#[inline]
+fn parse_paren_arbitrary(input: &str) -> IResult<&str, &str> {
+    let parser = delimited(tag("("), take_until_unbalanced('(', ')'), tag(")"));
     let (rest, (_, arbitrary)) = tuple((opt(char('-')), parser))(input)?;
     Ok((rest, arbitrary))
 }
