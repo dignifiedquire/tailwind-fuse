@@ -10,11 +10,12 @@ pub struct MergeOptions {
     ///
     /// <https://tailwindcss.com/docs/configuration#prefix>
     pub prefix: &'static str,
-    /// Custom separator for modifiers in Tailwind classes
+    /// Custom separator for modifiers in Tailwind classes.
     ///
-    /// Default is `:`
+    /// Default is `:`.
     ///
-    /// <https://tailwindcss.com/docs/configuration#separator>
+    /// Note: Tailwind CSS v4 always uses `:` as the separator.
+    /// This option is retained for backwards compatibility with v3 configurations.
     pub separator: &'static str,
 }
 
