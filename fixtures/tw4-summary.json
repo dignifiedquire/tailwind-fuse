@@ -1,0 +1,231 @@
+{
+  "tailwindVersion": "4.x",
+  "generatedAt": "2026-03-11T21:01:25.508Z",
+  "totalClasses": 22685,
+  "classesWithCss": 22685,
+  "classesWithoutCss": 0,
+  "collisionGroups": 128,
+  "variants": 88,
+  "topPropertyGroups": [
+    {
+      "properties": "--tw-inset-shadow-color",
+      "count": 292,
+      "sample": [
+        "inset-shadow-amber-50",
+        "inset-shadow-amber-100",
+        "inset-shadow-amber-200",
+        "inset-shadow-amber-300",
+        "inset-shadow-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-shadow-color",
+      "count": 292,
+      "sample": [
+        "shadow-amber-50",
+        "shadow-amber-100",
+        "shadow-amber-200",
+        "shadow-amber-300",
+        "shadow-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-text-shadow-color",
+      "count": 292,
+      "sample": [
+        "text-shadow-amber-50",
+        "text-shadow-amber-100",
+        "text-shadow-amber-200",
+        "text-shadow-amber-300",
+        "text-shadow-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-drop-shadow+--tw-drop-shadow-color",
+      "count": 291,
+      "sample": [
+        "drop-shadow-amber-50",
+        "drop-shadow-amber-100",
+        "drop-shadow-amber-200",
+        "drop-shadow-amber-300",
+        "drop-shadow-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-gradient-from+--tw-gradient-stops",
+      "count": 291,
+      "sample": [
+        "from-amber-50",
+        "from-amber-100",
+        "from-amber-200",
+        "from-amber-300",
+        "from-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-inset-ring-color",
+      "count": 291,
+      "sample": [
+        "inset-ring-amber-50",
+        "inset-ring-amber-100",
+        "inset-ring-amber-200",
+        "inset-ring-amber-300",
+        "inset-ring-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-bottom+--tw-mask-bottom-from-color+--tw-mask-linear",
+      "count": 291,
+      "sample": [
+        "mask-b-from-amber-50",
+        "mask-b-from-amber-100",
+        "mask-b-from-amber-200",
+        "mask-b-from-amber-300",
+        "mask-b-from-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-bottom+--tw-mask-bottom-to-color+--tw-mask-linear",
+      "count": 291,
+      "sample": [
+        "mask-b-to-amber-50",
+        "mask-b-to-amber-100",
+        "mask-b-to-amber-200",
+        "mask-b-to-amber-300",
+        "mask-b-to-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-conic+--tw-mask-conic-from-color+--tw-mask-conic-stops",
+      "count": 291,
+      "sample": [
+        "mask-conic-from-amber-50",
+        "mask-conic-from-amber-100",
+        "mask-conic-from-amber-200",
+        "mask-conic-from-amber-300",
+        "mask-conic-from-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-conic+--tw-mask-conic-stops+--tw-mask-conic-to-color",
+      "count": 291,
+      "sample": [
+        "mask-conic-to-amber-50",
+        "mask-conic-to-amber-100",
+        "mask-conic-to-amber-200",
+        "mask-conic-to-amber-300",
+        "mask-conic-to-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-left+--tw-mask-left-from-color+--tw-mask-linear",
+      "count": 291,
+      "sample": [
+        "mask-l-from-amber-50",
+        "mask-l-from-amber-100",
+        "mask-l-from-amber-200",
+        "mask-l-from-amber-300",
+        "mask-l-from-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-left+--tw-mask-left-to-color+--tw-mask-linear",
+      "count": 291,
+      "sample": [
+        "mask-l-to-amber-50",
+        "mask-l-to-amber-100",
+        "mask-l-to-amber-200",
+        "mask-l-to-amber-300",
+        "mask-l-to-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-linear+--tw-mask-linear-from-color+--tw-mask-linear-stops",
+      "count": 291,
+      "sample": [
+        "mask-linear-from-amber-50",
+        "mask-linear-from-amber-100",
+        "mask-linear-from-amber-200",
+        "mask-linear-from-amber-300",
+        "mask-linear-from-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-linear+--tw-mask-linear-stops+--tw-mask-linear-to-color",
+      "count": 291,
+      "sample": [
+        "mask-linear-to-amber-50",
+        "mask-linear-to-amber-100",
+        "mask-linear-to-amber-200",
+        "mask-linear-to-amber-300",
+        "mask-linear-to-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-linear+--tw-mask-right+--tw-mask-right-from-color",
+      "count": 291,
+      "sample": [
+        "mask-r-from-amber-50",
+        "mask-r-from-amber-100",
+        "mask-r-from-amber-200",
+        "mask-r-from-amber-300",
+        "mask-r-from-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-linear+--tw-mask-right+--tw-mask-right-to-color",
+      "count": 291,
+      "sample": [
+        "mask-r-to-amber-50",
+        "mask-r-to-amber-100",
+        "mask-r-to-amber-200",
+        "mask-r-to-amber-300",
+        "mask-r-to-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-radial+--tw-mask-radial-from-color+--tw-mask-radial-stops",
+      "count": 291,
+      "sample": [
+        "mask-radial-from-amber-50",
+        "mask-radial-from-amber-100",
+        "mask-radial-from-amber-200",
+        "mask-radial-from-amber-300",
+        "mask-radial-from-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-radial+--tw-mask-radial-stops+--tw-mask-radial-to-color",
+      "count": 291,
+      "sample": [
+        "mask-radial-to-amber-50",
+        "mask-radial-to-amber-100",
+        "mask-radial-to-amber-200",
+        "mask-radial-to-amber-300",
+        "mask-radial-to-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-linear+--tw-mask-top+--tw-mask-top-from-color",
+      "count": 291,
+      "sample": [
+        "mask-t-from-amber-50",
+        "mask-t-from-amber-100",
+        "mask-t-from-amber-200",
+        "mask-t-from-amber-300",
+        "mask-t-from-amber-400"
+      ]
+    },
+    {
+      "properties": "--tw-mask-linear+--tw-mask-top+--tw-mask-top-to-color",
+      "count": 291,
+      "sample": [
+        "mask-t-to-amber-50",
+        "mask-t-to-amber-100",
+        "mask-t-to-amber-200",
+        "mask-t-to-amber-300",
+        "mask-t-to-amber-400"
+      ]
+    }
+  ]
+}

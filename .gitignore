@@ -1,2 +1,5 @@
 /target
 .DS_Store
+scripts/node_modules/
+scripts/package-lock.json
+fixtures/tw4-class-map.json

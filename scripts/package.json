@@ -1,0 +1,11 @@
+{
+  "name": "tailwind-fuse-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node generate-class-list.mjs"
+  },
+  "dependencies": {
+    "tailwindcss": "^4.2.1"
+  }
+}

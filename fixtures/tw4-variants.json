@@ -1,0 +1,672 @@
+[
+  {
+    "name": "*",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      ":is(& > *)"
+    ]
+  },
+  {
+    "name": "**",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      ":is(& *)"
+    ]
+  },
+  {
+    "name": "not",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "group",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "peer",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "first-letter",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&::first-letter"
+    ]
+  },
+  {
+    "name": "first-line",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&::first-line"
+    ]
+  },
+  {
+    "name": "marker",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "& *::marker",
+      "&::marker",
+      "& *::-webkit-details-marker",
+      "&::-webkit-details-marker"
+    ]
+  },
+  {
+    "name": "selection",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "& *::selection",
+      "&::selection"
+    ]
+  },
+  {
+    "name": "file",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&::file-selector-button"
+    ]
+  },
+  {
+    "name": "placeholder",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&::placeholder"
+    ]
+  },
+  {
+    "name": "backdrop",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&::backdrop"
+    ]
+  },
+  {
+    "name": "details-content",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&::details-content"
+    ]
+  },
+  {
+    "name": "before",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "after",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "first",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:first-child"
+    ]
+  },
+  {
+    "name": "last",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:last-child"
+    ]
+  },
+  {
+    "name": "only",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:only-child"
+    ]
+  },
+  {
+    "name": "odd",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:nth-child(odd)"
+    ]
+  },
+  {
+    "name": "even",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:nth-child(even)"
+    ]
+  },
+  {
+    "name": "first-of-type",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:first-of-type"
+    ]
+  },
+  {
+    "name": "last-of-type",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:last-of-type"
+    ]
+  },
+  {
+    "name": "only-of-type",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:only-of-type"
+    ]
+  },
+  {
+    "name": "visited",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:visited"
+    ]
+  },
+  {
+    "name": "target",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:target"
+    ]
+  },
+  {
+    "name": "open",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:is([open], :popover-open, :open)"
+    ]
+  },
+  {
+    "name": "default",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:default"
+    ]
+  },
+  {
+    "name": "checked",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:checked"
+    ]
+  },
+  {
+    "name": "indeterminate",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:indeterminate"
+    ]
+  },
+  {
+    "name": "placeholder-shown",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:placeholder-shown"
+    ]
+  },
+  {
+    "name": "autofill",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:autofill"
+    ]
+  },
+  {
+    "name": "optional",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:optional"
+    ]
+  },
+  {
+    "name": "required",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:required"
+    ]
+  },
+  {
+    "name": "valid",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:valid"
+    ]
+  },
+  {
+    "name": "invalid",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:invalid"
+    ]
+  },
+  {
+    "name": "user-valid",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:user-valid"
+    ]
+  },
+  {
+    "name": "user-invalid",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:user-invalid"
+    ]
+  },
+  {
+    "name": "in-range",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:in-range"
+    ]
+  },
+  {
+    "name": "out-of-range",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:out-of-range"
+    ]
+  },
+  {
+    "name": "read-only",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:read-only"
+    ]
+  },
+  {
+    "name": "empty",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:empty"
+    ]
+  },
+  {
+    "name": "focus-within",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:focus-within"
+    ]
+  },
+  {
+    "name": "hover",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (hover: hover) { &:hover }"
+    ]
+  },
+  {
+    "name": "focus",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:focus"
+    ]
+  },
+  {
+    "name": "focus-visible",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:focus-visible"
+    ]
+  },
+  {
+    "name": "active",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:active"
+    ]
+  },
+  {
+    "name": "enabled",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:enabled"
+    ]
+  },
+  {
+    "name": "disabled",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:disabled"
+    ]
+  },
+  {
+    "name": "inert",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:is([inert], [inert] *)"
+    ]
+  },
+  {
+    "name": "in",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "has",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "aria",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "data",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "nth",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "nth-last",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "nth-of-type",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "nth-last-of-type",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "supports",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "motion-safe",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (prefers-reduced-motion: no-preference)"
+    ]
+  },
+  {
+    "name": "motion-reduce",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (prefers-reduced-motion: reduce)"
+    ]
+  },
+  {
+    "name": "contrast-more",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (prefers-contrast: more)"
+    ]
+  },
+  {
+    "name": "contrast-less",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (prefers-contrast: less)"
+    ]
+  },
+  {
+    "name": "max",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "sm",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (width >= 40rem)"
+    ]
+  },
+  {
+    "name": "md",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (width >= 48rem)"
+    ]
+  },
+  {
+    "name": "lg",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (width >= 64rem)"
+    ]
+  },
+  {
+    "name": "xl",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (width >= 80rem)"
+    ]
+  },
+  {
+    "name": "2xl",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (width >= 96rem)"
+    ]
+  },
+  {
+    "name": "min",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "@max",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "@",
+    "isArbitrary": true,
+    "hasDash": false,
+    "selectors": []
+  },
+  {
+    "name": "@min",
+    "isArbitrary": true,
+    "hasDash": true,
+    "selectors": []
+  },
+  {
+    "name": "portrait",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (orientation: portrait)"
+    ]
+  },
+  {
+    "name": "landscape",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (orientation: landscape)"
+    ]
+  },
+  {
+    "name": "ltr",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:where(:dir(ltr), [dir=\"ltr\"], [dir=\"ltr\"] *)"
+    ]
+  },
+  {
+    "name": "rtl",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "&:where(:dir(rtl), [dir=\"rtl\"], [dir=\"rtl\"] *)"
+    ]
+  },
+  {
+    "name": "dark",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (prefers-color-scheme: dark)"
+    ]
+  },
+  {
+    "name": "starting",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@starting-style "
+    ]
+  },
+  {
+    "name": "print",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media print"
+    ]
+  },
+  {
+    "name": "forced-colors",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (forced-colors: active)"
+    ]
+  },
+  {
+    "name": "inverted-colors",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (inverted-colors: inverted)"
+    ]
+  },
+  {
+    "name": "pointer-none",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (pointer: none)"
+    ]
+  },
+  {
+    "name": "pointer-coarse",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (pointer: coarse)"
+    ]
+  },
+  {
+    "name": "pointer-fine",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (pointer: fine)"
+    ]
+  },
+  {
+    "name": "any-pointer-none",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (any-pointer: none)"
+    ]
+  },
+  {
+    "name": "any-pointer-coarse",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (any-pointer: coarse)"
+    ]
+  },
+  {
+    "name": "any-pointer-fine",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (any-pointer: fine)"
+    ]
+  },
+  {
+    "name": "noscript",
+    "isArbitrary": false,
+    "hasDash": true,
+    "selectors": [
+      "@media (scripting: none)"
+    ]
+  }
+]
