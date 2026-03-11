@@ -437,4 +437,148 @@ mod test {
         })];
         assert_eq!(result, expected)
     }
+
+    // === Tailwind v4 syntax tests ===
+
+    #[test]
+    fn test_suffix_important() {
+        // v4: important modifier can be suffix (bg-red-500!)
+        let class = "bg-red-500!";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "bg-red-500!",
+            important: true,
+            negative: false,
+            variants: vec![],
+            elements: vec!["bg", "red", "500"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_suffix_important_with_variant() {
+        let class = "hover:bg-red-500!";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "hover:bg-red-500!",
+            important: true,
+            negative: false,
+            variants: vec!["hover"],
+            elements: vec!["bg", "red", "500"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_prefix_important_still_works() {
+        // v4 still supports prefix ! for backwards compat
+        let class = "!bg-red-500";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "!bg-red-500",
+            important: true,
+            negative: false,
+            variants: vec![],
+            elements: vec!["bg", "red", "500"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_paren_arbitrary_value() {
+        // v4: parenthesized arbitrary values w-(--my-width)
+        let class = "w-(--my-width)";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "w-(--my-width)",
+            important: false,
+            negative: false,
+            variants: vec![],
+            elements: vec!["w"],
+            arbitrary: Some("--my-width"),
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_paren_arbitrary_with_variant() {
+        let class = "hover:bg-(--my-color)";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "hover:bg-(--my-color)",
+            important: false,
+            negative: false,
+            variants: vec!["hover"],
+            elements: vec!["bg"],
+            arbitrary: Some("--my-color"),
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_container_query_variant() {
+        // v4: @sm, @md, @lg container query variants
+        let class = "@sm:flex";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "@sm:flex",
+            important: false,
+            negative: false,
+            variants: vec!["@sm"],
+            elements: vec!["flex"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_container_query_arbitrary_variant() {
+        // v4: @[500px]:flex
+        let class = "@[500px]:flex";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "@[500px]:flex",
+            important: false,
+            negative: false,
+            variants: vec!["@[500px]"],
+            elements: vec!["flex"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_star_variant() {
+        // v4: * variant targets direct children
+        let class = "*:flex";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "*:flex",
+            important: false,
+            negative: false,
+            variants: vec!["*"],
+            elements: vec!["flex"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_double_star_variant() {
+        // v4: ** variant targets all descendants
+        let class = "**:flex";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "**:flex",
+            important: false,
+            negative: false,
+            variants: vec!["**"],
+            elements: vec!["flex"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
 }
