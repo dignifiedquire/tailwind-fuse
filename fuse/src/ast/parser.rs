@@ -97,7 +97,7 @@ fn parse_variant<'a>(separator: &'a str, input: &'a str) -> IResult<&'a str, AST
 
 // https://tailwindcss.com/docs/hover-focus-and-other-states#using-arbitrary-variants
 #[inline]
-fn parse_normal_variant(input: &str) -> IResult<&str, ASTVariant> {
+fn parse_normal_variant(input: &str) -> IResult<&str, ASTVariant<'_>> {
     let parser = take_while1(|c: char| c.is_alphanumeric() || c == '-');
     let (rest, result) = parser(input)?;
     Ok((rest, ASTVariant::Normal(result)))
@@ -106,7 +106,7 @@ fn parse_normal_variant(input: &str) -> IResult<&str, ASTVariant> {
 // https://tailwindcss.com/docs/hover-focus-and-other-states#data-attributes
 // https://tailwindcss.com/docs/hover-focus-and-other-states#supports-rules
 #[inline]
-fn parse_data_attribute_variant(input: &str) -> IResult<&str, ASTVariant> {
+fn parse_data_attribute_variant(input: &str) -> IResult<&str, ASTVariant<'_>> {
     let tag_prefix = alt((tag("data-"), tag("supports-"), tag("group-data-")));
     let mut parser = delimited(tag_prefix, take_till1(|c| c == ']'), tag("]"));
     let (rest, _) = parser(input)?;
@@ -116,7 +116,7 @@ fn parse_data_attribute_variant(input: &str) -> IResult<&str, ASTVariant> {
 
 // https://tailwindcss.com/docs/hover-focus-and-other-states#using-arbitrary-variants
 #[inline]
-fn parse_arbitrary_attribute_variant(input: &str) -> IResult<&str, ASTVariant> {
+fn parse_arbitrary_attribute_variant(input: &str) -> IResult<&str, ASTVariant<'_>> {
     let mut parser = delimited(tag("["), take_until_unbalanced('[', ']'), tag("]"));
     let (rest, _) = parser(input)?;
     let entire_variant = &input[..input.len() - rest.len()];
@@ -183,7 +183,7 @@ pub fn take_until_unbalanced(
 mod test {
     use super::*;
 
-    fn parse_tailwind(class: &str) -> Vec<Result<AstStyle, &str>> {
+    fn parse_tailwind(class: &str) -> Vec<Result<AstStyle<'_>, &str>> {
         let options = AstParseOptions::default();
         let split = class.split_whitespace().collect::<Vec<_>>();
         super::parse_tailwind(split.as_slice(), options)

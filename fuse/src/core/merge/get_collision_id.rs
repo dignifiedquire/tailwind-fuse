@@ -231,7 +231,7 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
 
         // https://tailwindcss.com/docs/justify-content
         ["justify", "normal" | "start" | "end" | "center" | "between" | "around" | "evenly" | "stretch"] => Ok("justify-content"),
-        
+
         // https://tailwindcss.com/docs/justify-items
         ["justify", "items", "start" | "end" | "center" | "stretch"] => Ok("justify-items"),
 
@@ -246,7 +246,7 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
 
         // https://tailwindcss.com/docs/align-self
         ["self", "auto" | "start" | "end" | "center" | "stretch" | "baseline"] => Ok("align-self"),
-        
+
         // https://tailwindcss.com/docs/place-content
         ["place", "content", "center" | "start" | "end" | "between" | "around" | "evenly" | "baseline" | "stretch"] => Ok("place-content"),
 
@@ -685,7 +685,7 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
 
         // https://tailwindcss.com/docs/transform-origin
         ["origin", ..] => Ok("transform-origin"),
-        
+
         // https://tailwindcss.com/docs/accent-color
         ["accent", ..] => Ok("accent-color"),
 
