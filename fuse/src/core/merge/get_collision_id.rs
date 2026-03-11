@@ -557,17 +557,22 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         // https://tailwindcss.com/docs/outline-color
         ["outline", ..] => Ok("outline-color"),
 
-        // https://tailwindcss.com/docs/outline-offset
-        ["ring", "inset"] => Ok("ring-width"),
+        // https://tailwindcss.com/docs/ring-width
+        // ring-inset sets --tw-ring-inset, NOT ring width — must be separate group
+        ["ring", "inset"] => Ok("ring-inset"),
+        // bare `ring` = 1px ring width (v4 default)
+        ["ring"] if arbitrary.is_empty() => Ok("ring-width"),
         ["ring", rest] if rest.parse::<usize>().is_ok() => Ok("ring-width"),
-        ["ring"] if arbitrary.parse::<usize>().is_ok() => Ok("ring-width"),
+        ["ring"] if !arbitrary.is_empty() => Ok("ring-width"),
 
         // https://tailwindcss.com/docs/ring-offset-width
         ["ring", "offset", rest] if rest.parse::<usize>().is_ok() => Ok("ring-offset-width"),
-        ["ring", "offset"] if arbitrary.parse::<usize>().is_ok() => Ok("ring-offset-width"),
+        ["ring", "offset"] if !arbitrary.is_empty() => Ok("ring-offset-width"),
 
         // https://tailwindcss.com/docs/ring-offset-color
         ["ring", "offset", ..] => Ok("ring-offset-color"),
+
+        // https://tailwindcss.com/docs/ring-color
         ["ring", ..] => Ok("ring-color"),
 
 

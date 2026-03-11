@@ -168,33 +168,21 @@ fn ring_width_classes_merge_correctly() {
 
 #[test]
 fn ring_color_classes_merge_correctly() {
-    assert_eq!(
-        tw_merge("ring-red-500 ring-blue-500"),
-        "ring-blue-500"
-    );
+    assert_eq!(tw_merge("ring-red-500 ring-blue-500"), "ring-blue-500");
 }
 
 #[test]
 fn ring_width_and_color_do_not_conflict() {
     // ring width and ring color are different groups
     assert_eq!(tw_merge("ring ring-red-500"), "ring ring-red-500");
-    assert_eq!(
-        tw_merge("ring-2 ring-blue-500"),
-        "ring-2 ring-blue-500"
-    );
+    assert_eq!(tw_merge("ring-2 ring-blue-500"), "ring-2 ring-blue-500");
 }
 
 #[test]
 fn ring_inset_does_not_conflict_with_ring_width() {
     // Issue #28: ring-inset should NOT conflict with ring width
-    assert_eq!(
-        tw_merge("ring-1 ring-inset"),
-        "ring-1 ring-inset"
-    );
-    assert_eq!(
-        tw_merge("ring-inset ring-2"),
-        "ring-inset ring-2"
-    );
+    assert_eq!(tw_merge("ring-1 ring-inset"), "ring-1 ring-inset");
+    assert_eq!(tw_merge("ring-inset ring-2"), "ring-inset ring-2");
 }
 
 #[test]
