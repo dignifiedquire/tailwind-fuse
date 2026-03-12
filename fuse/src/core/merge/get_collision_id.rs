@@ -486,10 +486,17 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["bg", ..] => Ok("background-color"),
 
         // https://tailwindcss.com/docs/gradient-color-stops
-        // TODO: Review this?
-        ["from", ..] => Ok("from"),
-        ["via", ..] => Ok("via"),
-        ["to", ..] => Ok("to"),
+        // Gradient positions (e.g., from-50%, via-30%) vs gradient colors (e.g., from-red-500)
+        ["from", rest] if is_gradient_position(rest) => Ok("from-pos"),
+        ["from"] if is_gradient_position(arbitrary) => Ok("from-pos"),
+        ["from", ..] => Ok("from-color"),
+        ["via", "none"] => Ok("via-color"),
+        ["via", rest] if is_gradient_position(rest) => Ok("via-pos"),
+        ["via"] if is_gradient_position(arbitrary) => Ok("via-pos"),
+        ["via", ..] => Ok("via-color"),
+        ["to", rest] if is_gradient_position(rest) => Ok("to-pos"),
+        ["to"] if is_gradient_position(arbitrary) => Ok("to-pos"),
+        ["to", ..] => Ok("to-color"),
 
         // https://tailwindcss.com/docs/border-radius
         // TODO: Review
@@ -957,6 +964,10 @@ fn parse_fraction(input: &str) -> Option<(usize, usize)> {
     let a = a.parse::<usize>().ok()?;
     let b = b.parse::<usize>().ok()?;
     Some((a, b))
+}
+
+fn is_gradient_position(input: &str) -> bool {
+    input.ends_with('%') && input[..input.len() - 1].chars().all(|c| c.is_ascii_digit())
 }
 
 fn is_t_shirt_size(input: &str) -> bool {

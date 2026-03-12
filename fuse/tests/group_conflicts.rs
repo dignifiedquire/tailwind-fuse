@@ -395,6 +395,20 @@ fn scroll_padding_per_side_coexists() {
 }
 
 #[test]
+fn gradient_color_and_position_coexist() {
+    // from-color and from-position are different utilities
+    assert_eq!(tw_merge("from-red-500 from-50%"), "from-red-500 from-50%");
+    // via-color and via-position are different
+    assert_eq!(tw_merge("via-blue-500 via-30%"), "via-blue-500 via-30%");
+    // to-color and to-position are different
+    assert_eq!(tw_merge("to-green-500 to-90%"), "to-green-500 to-90%");
+    // Same type still merges
+    assert_eq!(tw_merge("from-red-500 from-blue-500"), "from-blue-500");
+    assert_eq!(tw_merge("from-50% from-30%"), "from-30%");
+    assert_eq!(tw_merge("via-50% via-100%"), "via-100%");
+}
+
+#[test]
 fn translate_shorthand_overrides_z() {
     // translate shorthand overrides translate-z
     assert_eq!(tw_merge("translate-z-4 translate-4"), "translate-4");
