@@ -182,7 +182,6 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
 
         // https://tailwindcss.com/docs/flex
         ["flex", "1"] | ["flex", "auto"] | ["flex", "initial"] | ["flex", "none"] => Ok("flex"),
-        // TODO: check this?
         ["flex", _] => Ok("flex"),
         ["flex"] if !arbitrary.is_empty() => Ok("flex"),
 
@@ -288,11 +287,9 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["space", "y", ..] => Ok("space-y"),
 
         // https://tailwindcss.com/docs/width
-        // TODO: Add validation?
         ["w", ..] => Ok("width"),
 
         // https://tailwindcss.com/docs/min-width
-        // TODO: Add validation?
         ["min", "w", ..] => Ok("min-width"),
 
         // https://tailwindcss.com/docs/max-width
@@ -458,7 +455,7 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         | ["bg", "repeat", "x" | "y" | "round" | "space"] => Ok("background-repeat"),
 
         // https://tailwindcss.com/docs/background-position
-        // TODO: Integrate arbitrary value? (e.g. bg-[center_top_1rem])
+        // Note: arbitrary bg positions (e.g., bg-[center_top_1rem]) fall through to bg-color
         ["bg", "bottom"]
         | ["bg", "center"]
         | ["bg", "left"]
@@ -479,7 +476,6 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["bg"] if is_arbitrary_bg_image(arbitrary) => Ok("background-image"),
 
         // https://tailwindcss.com/docs/background-blend-mode
-        // TODO: plus-lighter not valid
         ["bg", "blend", mode @ ..] if valid_blend(mode) => Ok("background-blend-mode"),
 
         // https://tailwindcss.com/docs/background-color
@@ -499,7 +495,6 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["to", ..] => Ok("to-color"),
 
         // https://tailwindcss.com/docs/border-radius
-        // TODO: Review
         ["rounded", "t", ..] => Ok("rounded-t"),
         ["rounded", "r", ..] => Ok("rounded-r"),
         ["rounded", "b", ..] => Ok("rounded-b"),
@@ -617,9 +612,8 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         // https://tailwindcss.com/docs/ring-color
         ["ring", ..] => Ok("ring-color"),
 
-
         // https://tailwindcss.com/docs/box-shadow
-        // TODO: handle conflict with color + arbitrary
+        // Note: arbitrary shadow values (e.g., shadow-[10px_5px]) fall through to shadow-color
         ["shadow"] | ["shadow", "inner" | "none"] if arbitrary.is_empty() => Ok("box-shadow"),
         ["shadow", size] if is_t_shirt_size(size) => Ok("box-shadow"),
 
