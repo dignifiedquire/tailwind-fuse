@@ -2,6 +2,20 @@ use tailwind_fuse::merge::tw_merge;
 use tailwind_fuse::tw_merge;
 
 #[test]
+fn edge_case_inputs() {
+    // Empty string
+    assert_eq!(tw_merge(""), "");
+    // Whitespace-only
+    assert_eq!(tw_merge("   "), "");
+    // Single class (passthrough)
+    assert_eq!(tw_merge("bg-red-500"), "bg-red-500");
+    // Leading/trailing whitespace
+    assert_eq!(tw_merge("  bg-red-500  "), "bg-red-500");
+    // Multiple spaces between classes
+    assert_eq!(tw_merge("bg-red-500    bg-blue-500"), "bg-blue-500");
+}
+
+#[test]
 fn test_tw_merge() {
     let classes = tw_merge!("bg-red-500", "bg-blue-500", "text-green-500");
     assert_eq!(classes, "bg-blue-500 text-green-500")
