@@ -67,8 +67,21 @@ fn same_group_pairs_merge() {
     let mut rng = fastrand::Rng::with_seed(42);
     let mut failures = Vec::new();
 
+    // The fixture groups classes by CSS property signature, which is sometimes
+    // coarser than tailwind-merge's semantic grouping. These groups intentionally
+    // contain classes from different utility families that share a CSS variable
+    // but should NOT conflict (e.g., border-style vs divide-style both set
+    // --tw-border-style but are separate collision groups in tailwind-merge).
+    let skip_groups: &[&str] = &[
+        "--tw-border-style",     // border-style and divide-style are separate groups
+        "--tw-divide-x-reverse", // divide-x-reverse is complementary to divide-x-*, not a conflict
+        "--tw-divide-y-reverse", // divide-y-reverse is complementary to divide-y-*, not a conflict
+        "--tw-space-x-reverse",  // space-x-reverse is complementary to space-x-*, not a conflict
+        "--tw-space-y-reverse",  // space-y-reverse is complementary to space-y-*, not a conflict
+    ];
+
     for (group_key, members) in &groups {
-        if members.len() < 2 {
+        if members.len() < 2 || skip_groups.contains(&group_key.as_str()) {
             continue;
         }
         // Test up to 5 random pairs per group
@@ -85,7 +98,10 @@ fn same_group_pairs_merge() {
 
             // The result should contain class b (the later one)
             // and should NOT contain class a (the earlier one, overridden)
-            if result.contains(a.as_str()) && a != b {
+            // Use word-boundary matching to avoid substring false positives
+            // (e.g., "shadow-lg" contains "shadow" as substring but shadow was correctly overridden)
+            let result_classes: Vec<&str> = result.split_whitespace().collect();
+            if result_classes.contains(&a.as_str()) && a != b {
                 failures.push(format!(
                     "  group={group_key}: tw_merge(\"{input}\") = \"{result}\" — expected \"{a}\" to be overridden by \"{b}\""
                 ));
@@ -112,10 +128,9 @@ fn same_group_pairs_merge() {
     let success_rate = success as f64 / total_tested as f64 * 100.0;
     eprintln!("Same-group merge coverage: {success}/{total_tested} ({success_rate:.1}%)");
     assert!(
-        success_rate >= 95.0,
-        "Same-group merge success rate {success_rate:.1}% is below 95% threshold ({} / {}). Failures:\n{}",
+        failures.is_empty(),
+        "Same-group merge failed for {} / {total_tested} pairs ({success_rate:.1}%). Failures:\n{}",
         failures.len(),
-        total_tested,
         failures[..failures.len().min(30)].join("\n")
     );
 }
@@ -146,14 +161,24 @@ fn cross_group_pairs_coexist() {
 
         // Both classes should be preserved (no conflict across groups)
         // unless there's a collision relationship (shorthand overrides longhand)
-        let has_both = result.contains(a.as_str()) && result.contains(b.as_str());
+        let result_classes: Vec<&str> = result.split_whitespace().collect();
+        let has_both = result_classes.contains(&a.as_str()) && result_classes.contains(&b.as_str());
         if !has_both {
-            // Only record if neither class is a shorthand of the other
-            // (collision relationships legitimately remove classes across groups)
-            failures.push(format!(
-                "  {}/{}: tw_merge(\"{input}\") = \"{result}\"",
-                group_keys[gi], group_keys[gj]
-            ));
+            // Check if this is a legitimate collision relationship by testing the
+            // reverse order: if later-wins holds in both directions, these classes
+            // have a real conflict (shorthand/longhand) which is correct behavior.
+            let reverse_input = format!("{b} {a}");
+            let reverse_result = tw_merge(&reverse_input);
+            let reverse_classes: Vec<&str> = reverse_result.split_whitespace().collect();
+            let reverse_has_both =
+                reverse_classes.contains(&a.as_str()) && reverse_classes.contains(&b.as_str());
+            if reverse_has_both {
+                // Only one direction drops a class — likely a bug, not a collision relationship
+                failures.push(format!(
+                    "  {}/{}: tw_merge(\"{input}\") = \"{result}\"",
+                    group_keys[gi], group_keys[gj]
+                ));
+            }
         }
     }
 
@@ -164,11 +189,12 @@ fn cross_group_pairs_coexist() {
             failures[..failures.len().min(20)].join("\n")
         );
     }
-    // Cross-group pairs should mostly coexist. Allow some due to collision relationships.
+    // Cross-group pairs should coexist.
     assert!(
-        failures.len() < 40,
-        "Too many cross-group failures: {} / 200",
-        failures.len()
+        failures.is_empty(),
+        "Cross-group coexistence failed for {} / 200 pairs. Failures:\n{}",
+        failures.len(),
+        failures[..failures.len().min(20)].join("\n")
     );
 }
 
@@ -247,7 +273,8 @@ fn full_group_merge_keeps_last() {
         let last = subset.last().unwrap();
 
         // The result should at minimum contain the last class
-        if !result.contains(last) {
+        let result_classes: Vec<&str> = result.split_whitespace().collect();
+        if !result_classes.contains(last) {
             failures.push(format!(
                 "  group={group_key}: last class \"{last}\" missing from result \"{result}\""
             ));
@@ -262,13 +289,10 @@ fn full_group_merge_keeps_last() {
             failures[..failures.len().min(20)].join("\n")
         );
     }
-    // Allow some failures for groups we haven't mapped yet
     let total_groups = groups.values().filter(|m| m.len() >= 2).count();
-    let failure_rate = failures.len() as f64 / total_groups as f64;
     assert!(
-        failure_rate < 0.30,
-        "Full-group merge failure rate {:.1}% ({} / {}). Some failures:\n{}",
-        failure_rate * 100.0,
+        failures.is_empty(),
+        "Full-group merge failed for {} / {} groups. Failures:\n{}",
         failures.len(),
         total_groups,
         failures[..failures.len().min(20)].join("\n")

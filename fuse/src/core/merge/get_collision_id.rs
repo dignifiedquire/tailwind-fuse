@@ -571,7 +571,7 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
 
         // https://tailwindcss.com/docs/outline-style
         | ["outline"]
-        | ["outline", "none" | "solid" | "dashed" | "dotted" | "double"] 
+        | ["outline", "none" | "hidden" | "solid" | "dashed" | "dotted" | "double"]
         // necessary for "outline"
             if arbitrary.is_empty() =>
         {
