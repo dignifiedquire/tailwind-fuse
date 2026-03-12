@@ -312,6 +312,22 @@ fn font_weight_merges_correctly() {
 }
 
 #[test]
+fn border_r_b_single_word_color_not_misclassified_as_width() {
+    // border-r-black is a color, not a width — should not conflict with border-r-2
+    assert_eq!(
+        tw_merge("border-r-black border-r-2"),
+        "border-r-black border-r-2"
+    );
+    assert_eq!(
+        tw_merge("border-b-white border-b-4"),
+        "border-b-white border-b-4"
+    );
+    // But same-type should still merge
+    assert_eq!(tw_merge("border-r-black border-r-blue"), "border-r-blue");
+    assert_eq!(tw_merge("border-b-2 border-b-4"), "border-b-4");
+}
+
+#[test]
 fn border_width_shorthand_overrides_x_y() {
     // border-w overrides border-w-x and border-w-y
     assert_eq!(tw_merge("border-x-2 border-4"), "border-4");
