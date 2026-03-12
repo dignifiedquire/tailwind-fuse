@@ -762,10 +762,30 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["scroll", "auto" | "smooth"] => Ok("scroll-behavior"),
 
         // https://tailwindcss.com/docs/scroll-margin
-        ["scroll", rest, ..] if rest.starts_with('m') => Ok("scroll-margin"),
+        ["scroll", "mx", ..] => Ok("scroll-mx"),
+        ["scroll", "my", ..] => Ok("scroll-my"),
+        ["scroll", "ms", ..] => Ok("scroll-ms"),
+        ["scroll", "me", ..] => Ok("scroll-me"),
+        ["scroll", "mt", ..] => Ok("scroll-mt"),
+        ["scroll", "mr", ..] => Ok("scroll-mr"),
+        ["scroll", "mb", ..] => Ok("scroll-mb"),
+        ["scroll", "ml", ..] => Ok("scroll-ml"),
+        ["scroll", "mbs", ..] => Ok("scroll-mbs"),
+        ["scroll", "mbe", ..] => Ok("scroll-mbe"),
+        ["scroll", "m", ..] => Ok("scroll-m"),
 
         // https://tailwindcss.com/docs/scroll-padding
-        ["scroll", rest, ..] if rest.starts_with('p') => Ok("scroll-padding"),
+        ["scroll", "px", ..] => Ok("scroll-px"),
+        ["scroll", "py", ..] => Ok("scroll-py"),
+        ["scroll", "ps", ..] => Ok("scroll-ps"),
+        ["scroll", "pe", ..] => Ok("scroll-pe"),
+        ["scroll", "pt", ..] => Ok("scroll-pt"),
+        ["scroll", "pr", ..] => Ok("scroll-pr"),
+        ["scroll", "pb", ..] => Ok("scroll-pb"),
+        ["scroll", "pl", ..] => Ok("scroll-pl"),
+        ["scroll", "pbs", ..] => Ok("scroll-pbs"),
+        ["scroll", "pbe", ..] => Ok("scroll-pbe"),
+        ["scroll", "p", ..] => Ok("scroll-p"),
 
         // https://tailwindcss.com/docs/scroll-snap-align
         ["snap", "start" | "end" | "center"] => Ok("scroll-snap-align"),

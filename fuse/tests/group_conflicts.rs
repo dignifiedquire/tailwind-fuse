@@ -355,6 +355,46 @@ fn border_color_shorthand_overrides_x_y() {
 }
 
 #[test]
+fn scroll_margin_per_side_coexists() {
+    // Different sides should coexist
+    assert_eq!(
+        tw_merge("scroll-mt-4 scroll-mb-4"),
+        "scroll-mt-4 scroll-mb-4"
+    );
+    assert_eq!(
+        tw_merge("scroll-ml-2 scroll-mr-2"),
+        "scroll-ml-2 scroll-mr-2"
+    );
+    // Same side merges
+    assert_eq!(tw_merge("scroll-mt-2 scroll-mt-4"), "scroll-mt-4");
+    // Shorthand overrides per-side
+    assert_eq!(tw_merge("scroll-mt-4 scroll-m-2"), "scroll-m-2");
+    // Per-side doesn't override shorthand
+    assert_eq!(tw_merge("scroll-m-2 scroll-mt-4"), "scroll-m-2 scroll-mt-4");
+    // X/Y shorthands
+    assert_eq!(tw_merge("scroll-mr-2 scroll-mx-4"), "scroll-mx-4");
+    assert_eq!(
+        tw_merge("scroll-mx-4 scroll-mr-2"),
+        "scroll-mx-4 scroll-mr-2"
+    );
+}
+
+#[test]
+fn scroll_padding_per_side_coexists() {
+    // Different sides should coexist
+    assert_eq!(
+        tw_merge("scroll-pt-4 scroll-pb-4"),
+        "scroll-pt-4 scroll-pb-4"
+    );
+    // Same side merges
+    assert_eq!(tw_merge("scroll-pt-2 scroll-pt-4"), "scroll-pt-4");
+    // Shorthand overrides per-side
+    assert_eq!(tw_merge("scroll-pt-4 scroll-p-2"), "scroll-p-2");
+    // Per-side doesn't override shorthand
+    assert_eq!(tw_merge("scroll-p-2 scroll-pt-4"), "scroll-p-2 scroll-pt-4");
+}
+
+#[test]
 fn translate_shorthand_overrides_z() {
     // translate shorthand overrides translate-z
     assert_eq!(tw_merge("translate-z-4 translate-4"), "translate-4");
