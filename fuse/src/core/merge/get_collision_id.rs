@@ -11,6 +11,9 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         // https://tailwindcss.com/docs/container
         ["container"] => Ok("container"),
 
+        // v4: Container type (@container)
+        ["@container"] | ["@container", "normal"] => Ok("container-type"),
+
         // https://tailwindcss.com/docs/columns
         ["columns", "auto"] => Ok("columns"),
         ["columns", rest] if is_t_shirt_size(rest) || rest.parse::<usize>().is_ok() => {
@@ -20,20 +23,13 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
             Ok("columns")
         }
         // https://tailwindcss.com/docs/break-after
-        ["break", "after", rest] if valid_break_after(rest) => Ok("break-after"),
+        ["break", "after", ..] => Ok("break-after"),
 
         // https://tailwindcss.com/docs/break-before
-        ["break", "before", rest] if valid_break_after(rest) => {
-            Ok("break-before")
-        }
+        ["break", "before", ..] => Ok("break-before"),
+
         // https://tailwindcss.com/docs/break-inside
-        ["break", "inside", rest] => {
-            if valid_break_after(rest) {
-                Ok("break-inside")
-            } else {
-                Err("Invalid break-inside")
-            }
-        }
+        ["break", "inside", ..] => Ok("break-inside"),
         // https://tailwindcss.com/docs/box-decoration-break
         ["box", "decoration", "clone" | "slice"] => {
             Ok("box-decoration-break")
@@ -68,15 +64,15 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         }
 
         // https://tailwindcss.com/docs/float
-        ["float", "start" | "end" | "right" | "none"] => {
+        ["float", "start" | "end" | "left" | "right" | "none"] => {
             Ok("float")
         }
 
         // https://tailwindcss.com/docs/clear
-        ["clear", "start" | "end" | "right" | "both" | "none"] => Ok("clear"),
+        ["clear", "start" | "end" | "left" | "right" | "both" | "none"] => Ok("clear"),
 
         // https://tailwindcss.com/docs/isolation
-        ["isolation"] | ["isolation", "auto"] => Ok("isolation"),
+        ["isolate"] | ["isolation"] | ["isolation", "auto"] => Ok("isolation"),
 
         // https://tailwindcss.com/docs/object-fit
         ["object", "contain"]
@@ -94,7 +90,11 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         | ["object", "right"]
         | ["object", "right", "bottom"]
         | ["object", "right", "top"]
-        | ["object", "top"] => Ok("object-position"),
+        | ["object", "top"]
+        | ["object", "bottom", "left"]
+        | ["object", "bottom", "right"]
+        | ["object", "top", "left"]
+        | ["object", "top", "right"] => Ok("object-position"),
 
         // https://tailwindcss.com/docs/overflow
         ["overflow", "auto"]
@@ -169,21 +169,7 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         },
 
         // https://tailwindcss.com/docs/flex-basis
-        ["basis", "full" | "auto" | "px" ] => Ok("flex-basis"),
-        ["basis", rest] => {
-            if parse_fraction_or_usize(rest) {
-                Ok("flex-basis")
-            } else {
-                Err("Invalid flex-basis")
-            }
-        }
-        ["basis"] => {
-            if parse_fraction_or_usize(arbitrary) {
-                Ok("flex-basis")
-            } else {
-                Err("Invalid flex-basis")
-            }
-        }
+        ["basis", ..] => Ok("flex-basis"),
 
         // https://tailwindcss.com/docs/flex-direction
         ["flex", "row"]
@@ -246,31 +232,26 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["gap", ..] => Ok("gap"),
 
         // https://tailwindcss.com/docs/justify-content
-        ["justify", "normal" | "start" | "end" | "center" | "between" | "around" | "evenly" | "stretch"] => Ok("justify-content"),
-
-        // https://tailwindcss.com/docs/justify-items
-        ["justify", "items", "start" | "end" | "center" | "stretch"] => Ok("justify-items"),
-
-        // https://tailwindcss.com/docs/justify-self
-        ["justify", "self", "start" | "end" | "center" | "stretch"] => Ok("justify-self"),
+        ["justify", "items", ..] => Ok("justify-items"),
+        ["justify", "self", ..] => Ok("justify-self"),
+        ["justify", ..] => Ok("justify-content"),
 
         // https://tailwindcss.com/docs/align-content
-        ["content", "normal" | "center" | "start" | "end" | "between" | "around" | "evenly" | "baseline" | "stretch"] => Ok("align-content"),
+        ["content", "normal" | "center" | "start" | "end" | "between" | "around" | "evenly" | "baseline" | "stretch"]
+        | ["content", "center" | "end", "safe"] => Ok("align-content"),
 
         // https://tailwindcss.com/docs/align-items
-        ["items", "start" | "end" | "center" | "baseline" | "stretch"] => Ok("align-items"),
+        ["items", ..] => Ok("align-items"),
 
         // https://tailwindcss.com/docs/align-self
-        ["self", "auto" | "start" | "end" | "center" | "stretch" | "baseline"] => Ok("align-self"),
+        ["self", "auto" | "start" | "end" | "center" | "stretch" | "baseline"]
+        | ["self", "center" | "end", "safe"]
+        | ["self", "baseline", "last"] => Ok("align-self"),
 
         // https://tailwindcss.com/docs/place-content
-        ["place", "content", "center" | "start" | "end" | "between" | "around" | "evenly" | "baseline" | "stretch"] => Ok("place-content"),
-
-        // https://tailwindcss.com/docs/place-items
-        ["place", "items", "start" | "end" | "center" | "baseline" | "stretch"] => Ok("place-items"),
-
-        // https://tailwindcss.com/docs/place-self
-        ["place", "self", "start" | "end" | "center" | "baseline" | "stretch"] => Ok("place-self"),
+        ["place", "content", ..] => Ok("place-content"),
+        ["place", "items", ..] => Ok("place-items"),
+        ["place", "self", ..] => Ok("place-self"),
 
         // https://tailwindcss.com/docs/padding
         ["p", ..] => Ok("padding"),
@@ -407,14 +388,8 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["decoration", "solid" | "double" | "dotted" | "dashed" | "wavy"] => Ok("text-decoration-style"),
 
         // https://tailwindcss.com/docs/text-decoration-thickness
-        ["decoration", "auto"] | ["decoration", "from-font"] => Ok("text-decoration-thickness"),
-        ["decoration", rest] => {
-            if rest.parse::<usize>().is_ok() {
-                Ok("text-decoration-thickness")
-            } else {
-                Err("Invalid text-decoration-thickness")
-            }
-        }
+        ["decoration", "auto"] | ["decoration", "from", "font"] => Ok("text-decoration-thickness"),
+        ["decoration", rest] if rest.parse::<usize>().is_ok() => Ok("text-decoration-thickness"),
         ["decoration"] if arbitrary.parse::<usize>().is_ok() => Ok("text-decoration-thickness"),
 
         // https://tailwindcss.com/docs/text-decoration-color
@@ -424,7 +399,7 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["underline", "offset", ..] => Ok("text-underline-offset"),
 
         // https://tailwindcss.com/docs/text-transform
-        ["uppercase" | "lowercase" | "capitalize" | "normal-case"] => Ok("text-transform"),
+        ["uppercase"] | ["lowercase"] | ["capitalize"] | ["normal", "case"] => Ok("text-transform"),
 
         // https://tailwindcss.com/docs/text-overflow
         ["truncate"] => Ok("text-overflow"),
@@ -712,8 +687,7 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["transition", ..] => Ok("transition-property"),
 
         // https://tailwindcss.com/docs/transition-duration
-        ["duration", rest] if rest.parse::<usize>().is_ok() => Ok("transition-duration"),
-        ["duration"] if arbitrary.parse::<usize>().is_ok() => Ok("transition-duration"),
+        ["duration", ..] => Ok("transition-duration"),
 
         // https:// tailwindcss.com/docs/transition-timing-function
         ["ease", ..] => Ok("transition-timing-function"),
@@ -726,37 +700,37 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["animate", ..] => Ok("animate"),
 
         // https://tailwindcss.com/docs/scale
-        ["scale", "x", rest] if rest.parse::<usize>().is_ok() => Ok("scale-x"),
-        ["scale", "x"] if arbitrary.parse::<usize>().is_ok() => Ok("scale-x"),
-        ["scale", "y", rest] if rest.parse::<usize>().is_ok() => Ok("scale-y"),
-        ["scale", "y"] if arbitrary.parse::<usize>().is_ok() => Ok("scale-y"),
-        // v4: 3D scale
+        ["scale", "x", ..] => Ok("scale-x"),
+        ["scale", "y", ..] => Ok("scale-y"),
         ["scale", "z", ..] => Ok("scale-z"),
-        ["scale", rest] if rest.parse::<usize>().is_ok() => Ok("scale"),
-        // [1.75] is valid
-        ["scale"] if arbitrary.parse::<f32>().is_ok() => Ok("scale"),
+        ["scale", ..] => Ok("scale"),
 
         // https://tailwindcss.com/docs/rotate
-        // v4: 3D rotation
         ["rotate", "x", ..] => Ok("rotate-x"),
         ["rotate", "y", ..] => Ok("rotate-y"),
         ["rotate", "z", ..] => Ok("rotate-z"),
-        ["rotate", rest] if rest.parse::<usize>().is_ok() => Ok("rotate"),
-        ["rotate"] if arbitrary.parse::<usize>().is_ok() => Ok("rotate"),
+        ["rotate", ..] => Ok("rotate"),
 
         // https://tailwindcss.com/docs/translate
-        ["translate", "x", ..]  => Ok("translate-x"),
-        ["translate", "y", ..]  => Ok("translate-y"),
-        // v4: 3D translation
+        ["translate", "x", ..] => Ok("translate-x"),
+        ["translate", "y", ..] => Ok("translate-y"),
         ["translate", "z", ..] => Ok("translate-z"),
+        // v4: bare translate (sets translate-x + translate-y)
+        ["translate", ..] => Ok("translate"),
 
         // https://tailwindcss.com/docs/skew
         ["skew", "x", ..]  => Ok("skew-x"),
         ["skew", "y", ..]  => Ok("skew-y"),
+        // v4: bare skew (sets both skew-x and skew-y)
+        ["skew", ..] => Ok("skew"),
 
         // v4: 3D transform utilities
         ["perspective", ..] => Ok("perspective"),
         ["transform", "3d" | "flat"] => Ok("transform-style"),
+        // v4: transform-box
+        ["transform", "border" | "content" | "fill" | "padding" | "stroke" | "view"] => Ok("transform-box"),
+        // v4: transform (enable/disable/render hint)
+        ["transform"] | ["transform", "none" | "cpu" | "gpu"] => Ok("transform"),
         ["backface", "visible" | "hidden"] => Ok("backface"),
 
         // https://tailwindcss.com/docs/transform-origin
@@ -790,7 +764,8 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["scroll", rest, ..] if rest.starts_with('p') => Ok("scroll-padding"),
 
         // https://tailwindcss.com/docs/scroll-snap-align
-        ["snap", "none" | "start" | "end" | "center" | "align", "none"] => Ok("scroll-snap-align"),
+        ["snap", "start" | "end" | "center"] => Ok("scroll-snap-align"),
+        ["snap", "align", "none"] => Ok("scroll-snap-align"),
 
         // https://tailwindcss.com/docs/scroll-snap-stop#forcing-snap-position-stops
         ["snap", "normal"] | ["snap", "always"] => Ok("scroll-snap-stop"),
@@ -836,6 +811,53 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         // https://tailwindcss.com/docs/forced-color-adjust
         ["forced", "color", "adjust", "auto" | "none"] => Ok("forced-color-adjust"),
 
+        // v4: Container queries (contain)
+        ["contain", "none" | "content" | "strict"] => Ok("contain"),
+        ["contain", "layout"] => Ok("contain-layout"),
+        ["contain", "paint"] => Ok("contain-paint"),
+        ["contain", "style"] => Ok("contain-style"),
+        ["contain", "size"] | ["contain", "inline", "size"] => Ok("contain-size"),
+
+        // v4: Mask utilities
+        // mask-image
+        ["mask", "none"] => Ok("mask-image"),
+        // mask-mode
+        ["mask", "alpha" | "luminance" | "match"] => Ok("mask-mode"),
+        // mask-composite
+        ["mask", "add" | "subtract" | "intersect" | "exclude"] => Ok("mask-composite"),
+        // mask-clip
+        ["mask", "clip", ..] | ["mask", "no", "clip"] => Ok("mask-clip"),
+        // mask-origin
+        ["mask", "origin", ..] => Ok("mask-origin"),
+        // mask-repeat
+        ["mask", "repeat", ..] | ["mask", "no", "repeat"] => Ok("mask-repeat"),
+        // mask-size
+        ["mask", "auto" | "contain" | "cover"] => Ok("mask-size"),
+        // mask-type
+        ["mask", "type", ..] => Ok("mask-type"),
+        // mask-position
+        ["mask", "bottom", ..] | ["mask", "top", ..] | ["mask", "left"]
+        | ["mask", "right"] | ["mask", "center"] => Ok("mask-position"),
+        // Gradient angles
+        ["mask", "linear", n] if n.parse::<usize>().is_ok() => Ok("mask-linear-pos"),
+        ["mask", "conic", n] if n.parse::<usize>().is_ok() => Ok("mask-conic-pos"),
+        // Radial shape
+        ["mask", "circle" | "ellipse"] => Ok("mask-radial-shape"),
+        // Radial size
+        ["mask", "radial", "closest" | "farthest", "corner" | "side"] => Ok("mask-radial-size"),
+        // Radial position
+        ["mask", "radial", "at", ..] => Ok("mask-radial-at"),
+        // Directional/gradient from (position vs color)
+        ["mask", dir, "from", value] if is_mask_dir(dir) && is_mask_position_value(value) => {
+            mask_collision_id(dir, "from-pos")
+        }
+        ["mask", dir, "from", ..] if is_mask_dir(dir) => mask_collision_id(dir, "from-color"),
+        // Directional/gradient to (position vs color)
+        ["mask", dir, "to", value] if is_mask_dir(dir) && is_mask_position_value(value) => {
+            mask_collision_id(dir, "to-pos")
+        }
+        ["mask", dir, "to", ..] if is_mask_dir(dir) => mask_collision_id(dir, "to-color"),
+
         _ => Err("Invalid Tailwind class"),
     }
 }
@@ -860,6 +882,8 @@ fn valid_blend(mode: &[&str]) -> bool {
             | ["color"]
             | ["luminosity"]
             | ["lighter"]
+            | ["plus", "darker"]
+            | ["plus", "lighter"]
     )
 }
 
@@ -887,13 +911,6 @@ fn valid_top_right_bottom_left(mode: &str) -> bool {
         || parse_fraction(mode).is_some()
 }
 
-fn valid_break_after(mode: &str) -> bool {
-    matches!(
-        mode,
-        "auto" | "avoid" | "all" | "avoid-page" | "page" | "left" | "right" | "column"
-    )
-}
-
 // Need starts_with for this https://tailwindcss.com/docs/font-size#setting-the-line-height
 fn valid_text_size(mode: &str) -> bool {
     mode == "base"
@@ -907,13 +924,6 @@ fn valid_text_size(mode: &str) -> bool {
         || mode.ends_with("lg")
         || mode.starts_with("xl")
         || mode.ends_with("xl")
-}
-
-fn parse_fraction_or_usize(input: &str) -> bool {
-    parse_fraction(input)
-        .map(|_| ())
-        .or_else(|| input.parse::<usize>().ok().map(|_| ()))
-        .is_some()
 }
 
 fn parse_fraction(input: &str) -> Option<(usize, usize)> {
@@ -961,6 +971,60 @@ fn is_arbitrary_size(input: &str) -> bool {
         |label| label == "length" || label == "size" || label == "percentage",
         |_| false,
     )
+}
+
+fn is_mask_dir(dir: &str) -> bool {
+    matches!(
+        dir,
+        "b" | "t" | "l" | "r" | "x" | "y" | "linear" | "conic" | "radial"
+    )
+}
+
+fn is_mask_position_value(value: &str) -> bool {
+    let stripped = value.strip_suffix('%').unwrap_or(value);
+    stripped.parse::<f64>().is_ok()
+}
+
+fn mask_collision_id(dir: &str, suffix: &str) -> Result<&'static str> {
+    match (dir, suffix) {
+        ("b", "from-color") => Ok("mask-b-from-color"),
+        ("b", "from-pos") => Ok("mask-b-from-pos"),
+        ("b", "to-color") => Ok("mask-b-to-color"),
+        ("b", "to-pos") => Ok("mask-b-to-pos"),
+        ("t", "from-color") => Ok("mask-t-from-color"),
+        ("t", "from-pos") => Ok("mask-t-from-pos"),
+        ("t", "to-color") => Ok("mask-t-to-color"),
+        ("t", "to-pos") => Ok("mask-t-to-pos"),
+        ("l", "from-color") => Ok("mask-l-from-color"),
+        ("l", "from-pos") => Ok("mask-l-from-pos"),
+        ("l", "to-color") => Ok("mask-l-to-color"),
+        ("l", "to-pos") => Ok("mask-l-to-pos"),
+        ("r", "from-color") => Ok("mask-r-from-color"),
+        ("r", "from-pos") => Ok("mask-r-from-pos"),
+        ("r", "to-color") => Ok("mask-r-to-color"),
+        ("r", "to-pos") => Ok("mask-r-to-pos"),
+        ("x", "from-color") => Ok("mask-x-from-color"),
+        ("x", "from-pos") => Ok("mask-x-from-pos"),
+        ("x", "to-color") => Ok("mask-x-to-color"),
+        ("x", "to-pos") => Ok("mask-x-to-pos"),
+        ("y", "from-color") => Ok("mask-y-from-color"),
+        ("y", "from-pos") => Ok("mask-y-from-pos"),
+        ("y", "to-color") => Ok("mask-y-to-color"),
+        ("y", "to-pos") => Ok("mask-y-to-pos"),
+        ("linear", "from-color") => Ok("mask-linear-from-color"),
+        ("linear", "from-pos") => Ok("mask-linear-from-pos"),
+        ("linear", "to-color") => Ok("mask-linear-to-color"),
+        ("linear", "to-pos") => Ok("mask-linear-to-pos"),
+        ("conic", "from-color") => Ok("mask-conic-from-color"),
+        ("conic", "from-pos") => Ok("mask-conic-from-pos"),
+        ("conic", "to-color") => Ok("mask-conic-to-color"),
+        ("conic", "to-pos") => Ok("mask-conic-to-pos"),
+        ("radial", "from-color") => Ok("mask-radial-from-color"),
+        ("radial", "from-pos") => Ok("mask-radial-from-pos"),
+        ("radial", "to-color") => Ok("mask-radial-to-color"),
+        ("radial", "to-pos") => Ok("mask-radial-to-pos"),
+        _ => Err("Invalid mask class"),
+    }
 }
 
 fn is_valid_arbitrary_value(

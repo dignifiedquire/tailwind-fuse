@@ -136,6 +136,27 @@ pub(crate) fn get_collisions(collision_id: &str) -> Option<Vec<&'static str>> {
         "scroll-py" => Some(vec!["scroll-pt", "scroll-pb"]),
         // v4: scale overrides 3D scale axes
         "scale" => Some(vec!["scale-x", "scale-y", "scale-z"]),
+        // v4: skew shorthand overrides x/y
+        "skew" => Some(vec!["skew-x", "skew-y"]),
+        // v4: translate shorthand overrides x/y
+        "translate" => Some(vec!["translate-x", "translate-y"]),
+        // v4: contain shorthand overrides individual containment
+        "contain" => Some(vec![
+            "contain-layout",
+            "contain-paint",
+            "contain-style",
+            "contain-size",
+        ]),
+        // v4: mask-x overrides mask-l + mask-r
+        "mask-x-from-color" => Some(vec!["mask-l-from-color", "mask-r-from-color"]),
+        "mask-x-from-pos" => Some(vec!["mask-l-from-pos", "mask-r-from-pos"]),
+        "mask-x-to-color" => Some(vec!["mask-l-to-color", "mask-r-to-color"]),
+        "mask-x-to-pos" => Some(vec!["mask-l-to-pos", "mask-r-to-pos"]),
+        // v4: mask-y overrides mask-b + mask-t
+        "mask-y-from-color" => Some(vec!["mask-b-from-color", "mask-t-from-color"]),
+        "mask-y-from-pos" => Some(vec!["mask-b-from-pos", "mask-t-from-pos"]),
+        "mask-y-to-color" => Some(vec!["mask-b-to-color", "mask-t-to-color"]),
+        "mask-y-to-pos" => Some(vec!["mask-b-to-pos", "mask-t-to-pos"]),
         "touch" => Some(vec!["touch-x", "touch-y", "touch-pz"]),
         "touch-x" => Some(vec!["touch"]),
         "touch-y" => Some(vec!["touch"]),

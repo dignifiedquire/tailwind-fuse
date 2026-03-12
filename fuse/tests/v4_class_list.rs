@@ -50,13 +50,12 @@ fn self_dedup_for_all_classes() {
         "Self-dedup coverage: {success}/{total} ({success_rate:.1}%) — {} unmapped",
         failures.len()
     );
-    // Regression guard: currently ~71% (mask-*, skew, contain unmapped).
-    // Tighten this threshold as more collision IDs are added.
+    // All TW v4 classes should be mapped.
     assert!(
-        success_rate >= 65.0,
-        "Self-dedup success rate {success_rate:.1}% is below 65% threshold ({} / {total}). Sample failures:\n{}",
+        failures.is_empty(),
+        "Self-dedup failed for {} / {total} classes ({success_rate:.1}%). Failures:\n{}",
         failures.len(),
-        failures[..failures.len().min(10)].join("\n")
+        failures[..failures.len().min(50)].join("\n")
     );
 }
 
@@ -104,8 +103,6 @@ fn same_group_pairs_merge() {
             failures.join("\n")
         );
     }
-    // Regression guard: currently ~60% success (mask-*, skew, contain unmapped).
-    // Tighten this threshold as more collision IDs are added.
     let total_tested: usize = groups
         .values()
         .filter(|m| m.len() >= 2)
@@ -115,11 +112,11 @@ fn same_group_pairs_merge() {
     let success_rate = success as f64 / total_tested as f64 * 100.0;
     eprintln!("Same-group merge coverage: {success}/{total_tested} ({success_rate:.1}%)");
     assert!(
-        success_rate >= 50.0,
-        "Same-group merge success rate {success_rate:.1}% is below 50% threshold ({} / {}). Sample failures:\n{}",
+        success_rate >= 95.0,
+        "Same-group merge success rate {success_rate:.1}% is below 95% threshold ({} / {}). Failures:\n{}",
         failures.len(),
         total_tested,
-        failures[..failures.len().min(20)].join("\n")
+        failures[..failures.len().min(30)].join("\n")
     );
 }
 
