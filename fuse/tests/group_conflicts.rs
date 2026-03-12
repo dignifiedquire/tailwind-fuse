@@ -283,3 +283,43 @@ fn test_group_data_important_modifiers() {
         "group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-0"
     );
 }
+
+#[test]
+fn text_size_with_slash_modifier() {
+    // text-base/7 should be recognized as font-size and override leading-*
+    assert_eq!(tw_merge("leading-9 text-base/7"), "text-base/7");
+    assert_eq!(tw_merge("leading-9 text-base/none"), "text-base/none");
+    // Should not conflict with text-color
+    assert_eq!(
+        tw_merge("text-red-500 text-base/7"),
+        "text-red-500 text-base/7"
+    );
+}
+
+// Issue #24: Custom font families should not conflict with font-weight
+#[test]
+fn font_family_does_not_conflict_with_font_weight() {
+    assert_eq!(tw_merge("font-english font-bold"), "font-english font-bold");
+    assert_eq!(tw_merge("font-bold font-english"), "font-bold font-english");
+    // Known font families still merge with each other
+    assert_eq!(tw_merge("font-sans font-mono"), "font-mono");
+}
+
+#[test]
+fn font_weight_merges_correctly() {
+    assert_eq!(tw_merge("font-bold font-thin"), "font-thin");
+    assert_eq!(tw_merge("font-light font-extrabold"), "font-extrabold");
+}
+
+#[test]
+fn font_stretch_merges_correctly() {
+    assert_eq!(
+        tw_merge("font-stretch-condensed font-stretch-expanded"),
+        "font-stretch-expanded"
+    );
+    // font-stretch should not conflict with font-weight
+    assert_eq!(
+        tw_merge("font-bold font-stretch-condensed"),
+        "font-bold font-stretch-condensed"
+    );
+}

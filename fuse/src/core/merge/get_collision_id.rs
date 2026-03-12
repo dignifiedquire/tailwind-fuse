@@ -322,8 +322,7 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["block", ..] => Ok("block-size"),
 
         // https://tailwindcss.com/docs/font-family
-        // TODO: This clash is bad
-        ["font", "sans"] | ["font", "serif"] | ["font", "mono"] => Ok("font-family"),
+        ["font", "sans" | "serif" | "mono"] => Ok("font-family"),
 
         // https://tailwindcss.com/docs/text-align
         ["text", "left" | "center" | "right" | "justify" | "start" | "end"] => Ok("text-align"),
@@ -353,7 +352,12 @@ pub fn get_collision_id(classes: &[&str], arbitrary: &str) -> Result<&'static st
         ["italic"] | ["not","italic"] => Ok("font-style"),
 
         // https://tailwindcss.com/docs/font-weight
-        ["font", ..] => Ok("font-weight"),
+        ["font", "thin" | "extralight" | "light" | "normal" | "medium" | "semibold" | "bold" | "extrabold" | "black"] => Ok("font-weight"),
+        ["font"] if arbitrary.parse::<usize>().is_ok() || arbitrary.starts_with("--") => Ok("font-weight"),
+
+        // https://tailwindcss.com/docs/font-stretch
+        ["font", "stretch", ..] => Ok("font-stretch"),
+        // Unknown font-* (custom font families like font-english) fall through to Err
 
         // https://tailwindcss.com/docs/font-variant-numeric
         ["normal", "nums"] => Ok("fvn-normal"),
@@ -913,6 +917,8 @@ fn valid_top_right_bottom_left(mode: &str) -> bool {
 
 // Need starts_with for this https://tailwindcss.com/docs/font-size#setting-the-line-height
 fn valid_text_size(mode: &str) -> bool {
+    // Strip slash modifier (e.g., "base/7", "lg/none") before checking size
+    let mode = mode.split('/').next().unwrap_or(mode);
     mode == "base"
         || mode.starts_with("xs")
         || mode.ends_with("xs")

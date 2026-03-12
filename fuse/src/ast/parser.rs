@@ -128,13 +128,22 @@ fn parse_star_variant(input: &str) -> IResult<&str, ASTVariant<'_>> {
     Ok((rest, ASTVariant::Normal(result)))
 }
 
-// https://tailwindcss.com/docs/hover-focus-and-other-states#data-attributes
-// https://tailwindcss.com/docs/hover-focus-and-other-states#supports-rules
+// Matches any variant with bracket syntax: <prefix>-[<balanced-content>]
+// Covers: data-[...], supports-[...], group-data-[...], has-[...],
+// group-has-[...], peer-has-[...], not-[...], in-[...], aria-[...],
+// nth-[...], @max-[...], @min-[...], min-[...], max-[...], etc.
 #[inline]
 fn parse_data_attribute_variant(input: &str) -> IResult<&str, ASTVariant<'_>> {
-    let tag_prefix = alt((tag("data-"), tag("supports-"), tag("group-data-")));
-    let mut parser = delimited(tag_prefix, take_till1(|c| c == ']'), tag("]"));
-    let (rest, _) = parser(input)?;
+    let (after_prefix, _) =
+        take_while1(|c: char| c.is_alphanumeric() || c == '-' || c == '@')(input)?;
+    let consumed = input.len() - after_prefix.len();
+    if consumed == 0 || !input[..consumed].ends_with('-') {
+        return Err(nom::Err::Error(nom::error::Error::new(
+            input,
+            nom::error::ErrorKind::Tag,
+        )));
+    }
+    let (rest, _) = delimited(tag("["), take_until_unbalanced('[', ']'), tag("]"))(after_prefix)?;
     let entire_variant = &input[..input.len() - rest.len()];
     Ok((rest, ASTVariant::DataAttribute(entire_variant)))
 }
@@ -610,6 +619,70 @@ mod test {
             negative: false,
             variants: vec!["**"],
             elements: vec!["flex"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_has_variant() {
+        let (rest, variant) = parse_data_attribute_variant("has-[[data-potato]]").unwrap();
+        assert_eq!("", rest);
+        assert_eq!(ASTVariant::DataAttribute("has-[[data-potato]]"), variant);
+
+        let class = "has-[[data-potato]]:p-2";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "has-[[data-potato]]:p-2",
+            important: false,
+            negative: false,
+            variants: vec!["has-[[data-potato]]"],
+            elements: vec!["p", "2"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_group_has_variant() {
+        let class = "group-has-[:checked]:flex";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "group-has-[:checked]:flex",
+            important: false,
+            negative: false,
+            variants: vec!["group-has-[:checked]"],
+            elements: vec!["flex"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_not_variant() {
+        let class = "not-[:hover]:p-4";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "not-[:hover]:p-4",
+            important: false,
+            negative: false,
+            variants: vec!["not-[:hover]"],
+            elements: vec!["p", "4"],
+            arbitrary: None,
+        })];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn test_aria_variant() {
+        let class = "aria-[checked]:bg-blue-500";
+        let result = parse_tailwind(class);
+        let expected = vec![Ok(AstStyle {
+            source: "aria-[checked]:bg-blue-500",
+            important: false,
+            negative: false,
+            variants: vec!["aria-[checked]"],
+            elements: vec!["bg", "blue", "500"],
             arbitrary: None,
         })];
         assert_eq!(result, expected)

@@ -51,8 +51,10 @@ pub fn tw_merge_override(
                 }
             },
             Ok(collision_id) => {
-                // hover:md:focus
-                let all_variants: Vec<&str> = style.variants.clone();
+                // Sort variants so that ordering doesn't matter for conflict detection.
+                // e.g., hover:focus:block and focus:hover:block generate identical CSS.
+                let mut all_variants: Vec<&str> = style.variants.clone();
+                all_variants.sort_unstable();
 
                 let collision = Collision {
                     important: style.important,
@@ -112,10 +114,12 @@ impl<'a> Collision<'a> {
         let arbitrary = style.arbitrary?;
         let index = arbitrary.find(':')?;
         let (collision_id, _) = arbitrary.split_at(index);
+        let mut variants = style.variants;
+        variants.sort_unstable();
         Some(Self {
             collision_id,
             important: style.important,
-            variants: style.variants,
+            variants,
         })
     }
 }

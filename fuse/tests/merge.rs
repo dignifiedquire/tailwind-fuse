@@ -332,6 +332,49 @@ fn test_data_attributes() {
 }
 
 #[test]
+fn bracket_variants() {
+    // has-[...] variants (TW 3.4+)
+    assert_eq!(
+        tw_merge("has-[[data-potato]]:p-1 has-[[data-potato]]:p-2"),
+        "has-[[data-potato]]:p-2"
+    );
+    // group-has-[...] variants
+    assert_eq!(
+        tw_merge("group-has-[:checked]:grid group-has-[:checked]:flex"),
+        "group-has-[:checked]:flex"
+    );
+    // not-[...] variants
+    assert_eq!(
+        tw_merge("not-[:hover]:p-2 not-[:hover]:p-4"),
+        "not-[:hover]:p-4"
+    );
+    // aria-[...] variants
+    assert_eq!(
+        tw_merge("aria-[checked]:bg-red-500 aria-[checked]:bg-blue-500"),
+        "aria-[checked]:bg-blue-500"
+    );
+    // nth-[...] variants
+    assert_eq!(
+        tw_merge("nth-[2n+1]:bg-red-500 nth-[2n+1]:bg-blue-500"),
+        "nth-[2n+1]:bg-blue-500"
+    );
+    // @min-[...] / @max-[...] variants
+    assert_eq!(
+        tw_merge("@max-[600px]:flex @max-[600px]:block"),
+        "@max-[600px]:block"
+    );
+    assert_eq!(
+        tw_merge("@min-[400px]:p-2 @min-[400px]:p-4"),
+        "@min-[400px]:p-4"
+    );
+    // min-[...] / max-[...] variants
+    assert_eq!(
+        tw_merge("min-[400px]:p-2 min-[400px]:p-4"),
+        "min-[400px]:p-4"
+    );
+}
+
+#[test]
 fn basic_arbitrary_variants() {
     assert_eq!(
         tw_merge("[&>*]:underline [&>*]:line-through"),
@@ -353,15 +396,16 @@ fn arbitrary_variants_with_modifiers() {
         tw_merge("dark:lg:hover:[&>*]:underline dark:lg:hover:[&>*]:line-through"),
         "dark:lg:hover:[&>*]:line-through"
     );
+    // Variant order doesn't matter — hover:[&>*] and [&>*]:hover generate same CSS
     assert_eq!(
         tw_merge("hover:[&>*]:underline [&>*]:hover:line-through"),
-        "hover:[&>*]:underline [&>*]:hover:line-through"
+        "[&>*]:hover:line-through"
     );
     assert_eq!(
         tw_merge(
             "dark:hover:[&>*]:underline dark:hover:[&>*]:underline dark:[&>*]:hover:line-through"
         ),
-        "dark:hover:[&>*]:underline dark:[&>*]:hover:line-through"
+        "dark:[&>*]:hover:line-through"
     );
 }
 
@@ -390,24 +434,25 @@ fn multiple_arbitrary_variants() {
         tw_merge("[&>*]:[&_div]:underline [&>*]:[&_div]:line-through"),
         "[&>*]:[&_div]:line-through"
     );
+    // Variant order doesn't matter — sorted variants match
     assert_eq!(
         tw_merge("[&>*]:[&_div]:underline [&_div]:[&>*]:line-through"),
-        "[&>*]:[&_div]:underline [&_div]:[&>*]:line-through"
+        "[&_div]:[&>*]:line-through"
     );
-    // What is this test even doing?
-    // assert_eq!(tw_merge("hover:dark:[&>*]:focus:disabled:[&_div]:underline dark:hover:[&>*]:disabled:focus:[&_div]:line-through"), "dark:hover:[&>*]:disabled:focus:[&_div]:line-through");
-    assert_eq!(tw_merge("hover:dark:[&>*]:focus:[&_div]:disabled:underline dark:hover:[&>*]:disabled:focus:[&_div]:line-through"), "hover:dark:[&>*]:focus:[&_div]:disabled:underline dark:hover:[&>*]:disabled:focus:[&_div]:line-through");
+    // Complex variant reordering — all variants sort to same set
+    assert_eq!(tw_merge("hover:dark:[&>*]:focus:disabled:[&_div]:underline dark:hover:[&>*]:disabled:focus:[&_div]:line-through"), "dark:hover:[&>*]:disabled:focus:[&_div]:line-through");
+    assert_eq!(tw_merge("hover:dark:[&>*]:focus:[&_div]:disabled:underline dark:hover:[&>*]:disabled:focus:[&_div]:line-through"), "dark:hover:[&>*]:disabled:focus:[&_div]:line-through");
 }
 
-// TODO: Fix this maybe?
-// #[test]
-// fn arbitrary_variants_with_arbitrary_properties() {
-//     assert_eq!(
-//         tw_merge("[&>*]:[color:red] [&>*]:[color:blue]"),
-//         "[&>*]:[color:blue]"
-//     );
-//     assert_eq!(tw_merge("[&[data-foo][data-bar]:not([data-baz])]:nod:noa:[color:red] [&[data-foo][data-bar]:not([data-baz])]:noa:nod:[color:blue]"), "[&[data-foo][data-bar]:not([data-baz])]:noa:nod:[color:blue]");
-// }
+#[test]
+fn arbitrary_variants_with_arbitrary_properties() {
+    assert_eq!(
+        tw_merge("[&>*]:[color:red] [&>*]:[color:blue]"),
+        "[&>*]:[color:blue]"
+    );
+    // Variant order doesn't matter for arbitrary properties either
+    assert_eq!(tw_merge("[&[data-foo][data-bar]:not([data-baz])]:nod:noa:[color:red] [&[data-foo][data-bar]:not([data-baz])]:noa:nod:[color:blue]"), "[&[data-foo][data-bar]:not([data-baz])]:noa:nod:[color:blue]");
+}
 
 #[test]
 fn invalid_class() {
@@ -450,6 +495,30 @@ fn arbitrary_property_conflicts() {
     let class = "hover:[paint-order:markers] hover:[paint-order:normal]";
     let result = tw_merge(class);
     assert_eq!(result, "hover:[paint-order:normal]");
+}
+
+#[test]
+fn variant_ordering_does_not_matter() {
+    // Simple reordering of normal variants
+    assert_eq!(
+        tw_merge("hover:focus:inline focus:hover:inline"),
+        "focus:hover:inline"
+    );
+    // With collision across groups (inset overrides right)
+    assert_eq!(
+        tw_merge("hover:focus:!right-0 focus:hover:!inset-0"),
+        "focus:hover:!inset-0"
+    );
+    // Mixed normal + arbitrary variants
+    assert_eq!(
+        tw_merge("dark:lg:hover:[&>*]:underline dark:hover:lg:[&>*]:line-through"),
+        "dark:hover:lg:[&>*]:line-through"
+    );
+    // Arbitrary properties with reordered variants
+    assert_eq!(
+        tw_merge("hover:focus:[paint-order:markers] focus:hover:[paint-order:normal]"),
+        "focus:hover:[paint-order:normal]"
+    );
 }
 
 #[test]
