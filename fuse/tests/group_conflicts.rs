@@ -312,6 +312,44 @@ fn font_weight_merges_correctly() {
 }
 
 #[test]
+fn border_width_shorthand_overrides_x_y() {
+    // border-w overrides border-w-x and border-w-y
+    assert_eq!(tw_merge("border-x-2 border-4"), "border-4");
+    assert_eq!(tw_merge("border-y-2 border-4"), "border-4");
+    // But x/y don't override shorthand
+    assert_eq!(tw_merge("border-4 border-x-2"), "border-4 border-x-2");
+}
+
+#[test]
+fn border_color_shorthand_overrides_x_y() {
+    // border-color overrides border-color-x and border-color-y
+    assert_eq!(
+        tw_merge("border-x-red-500 border-blue-500"),
+        "border-blue-500"
+    );
+    assert_eq!(
+        tw_merge("border-y-red-500 border-blue-500"),
+        "border-blue-500"
+    );
+    // But x/y don't override shorthand
+    assert_eq!(
+        tw_merge("border-blue-500 border-x-red-500"),
+        "border-blue-500 border-x-red-500"
+    );
+}
+
+#[test]
+fn translate_shorthand_overrides_z() {
+    // translate shorthand overrides translate-z
+    assert_eq!(tw_merge("translate-z-4 translate-4"), "translate-4");
+    // translate-z doesn't override shorthand
+    assert_eq!(
+        tw_merge("translate-4 translate-z-4"),
+        "translate-4 translate-z-4"
+    );
+}
+
+#[test]
 fn font_stretch_merges_correctly() {
     assert_eq!(
         tw_merge("font-stretch-condensed font-stretch-expanded"),

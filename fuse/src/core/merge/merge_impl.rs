@@ -5,6 +5,49 @@ use crate::ast::AstStyle;
 use super::{CollisionIdFn, GetCollisionsFn, MergeOptions};
 use crate::core::merge::get_collisions::get_collisions;
 
+/// Modifiers where position relative to other modifiers changes the generated CSS.
+/// e.g., `*:hover:block` (hover on direct children) ≠ `hover:*:block` (children of hovered element).
+/// These must NOT be reordered during variant normalization.
+const ORDER_SENSITIVE_MODIFIERS: &[&str] = &[
+    "*",
+    "**",
+    "after",
+    "backdrop",
+    "before",
+    "details-content",
+    "file",
+    "first-letter",
+    "first-line",
+    "marker",
+    "placeholder",
+    "selection",
+];
+
+/// Sort variants for collision detection, preserving the relative position of
+/// order-sensitive modifiers while sorting the rest alphabetically.
+fn sort_variants_for_collision<'a>(variants: &[&'a str]) -> Vec<&'a str> {
+    let mut result = variants.to_vec();
+
+    // Collect indices and values of non-order-sensitive variants
+    let mut sortable_indices: Vec<usize> = Vec::new();
+    let mut sortable_values: Vec<&str> = Vec::new();
+
+    for (i, v) in result.iter().enumerate() {
+        if !ORDER_SENSITIVE_MODIFIERS.contains(v) {
+            sortable_indices.push(i);
+            sortable_values.push(v);
+        }
+    }
+
+    sortable_values.sort_unstable();
+
+    for (idx, val) in sortable_indices.iter().zip(sortable_values.iter()) {
+        result[*idx] = val;
+    }
+
+    result
+}
+
 /// Merges all the Tailwind classes, resolving conflicts.
 /// Can supply custom options, collision_id_fn and collisions_fn.
 pub fn tw_merge_override(
@@ -51,10 +94,11 @@ pub fn tw_merge_override(
                 }
             },
             Ok(collision_id) => {
-                // Sort variants so that ordering doesn't matter for conflict detection.
-                // e.g., hover:focus:block and focus:hover:block generate identical CSS.
-                let mut all_variants: Vec<&str> = style.variants.clone();
-                all_variants.sort_unstable();
+                // Sort non-order-sensitive variants so that ordering doesn't matter
+                // for conflict detection. e.g., hover:focus:block ≡ focus:hover:block.
+                // Order-sensitive modifiers (*, **, after, before, etc.) keep their
+                // positions since reordering them changes the generated CSS.
+                let all_variants = sort_variants_for_collision(&style.variants);
 
                 let collision = Collision {
                     important: style.important,
@@ -114,8 +158,7 @@ impl<'a> Collision<'a> {
         let arbitrary = style.arbitrary?;
         let index = arbitrary.find(':')?;
         let (collision_id, _) = arbitrary.split_at(index);
-        let mut variants = style.variants;
-        variants.sort_unstable();
+        let variants = sort_variants_for_collision(&style.variants);
         Some(Self {
             collision_id,
             important: style.important,

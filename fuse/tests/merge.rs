@@ -522,6 +522,47 @@ fn variant_ordering_does_not_matter() {
 }
 
 #[test]
+fn order_sensitive_modifiers_preserve_position() {
+    // *:hover and hover:* generate different CSS — must NOT merge
+    assert_eq!(
+        tw_merge("*:hover:p-2 hover:*:p-4"),
+        "*:hover:p-2 hover:*:p-4"
+    );
+    // **:focus and focus:** generate different CSS
+    assert_eq!(
+        tw_merge("**:focus:block focus:**:block"),
+        "**:focus:block focus:**:block"
+    );
+    // after:hover and hover:after generate different CSS
+    assert_eq!(
+        tw_merge("after:hover:underline hover:after:underline"),
+        "after:hover:underline hover:after:underline"
+    );
+    // before:focus and focus:before generate different CSS
+    assert_eq!(
+        tw_merge("before:focus:text-red-500 focus:before:text-red-500"),
+        "before:focus:text-red-500 focus:before:text-red-500"
+    );
+    // Same order-sensitive position: still merges normally
+    assert_eq!(tw_merge("*:hover:p-2 *:hover:p-4"), "*:hover:p-4");
+    // Non-order-sensitive variants still sort and merge
+    assert_eq!(
+        tw_merge("*:hover:focus:p-2 *:focus:hover:p-4"),
+        "*:focus:hover:p-4"
+    );
+    // placeholder and marker are order-sensitive
+    assert_eq!(
+        tw_merge("placeholder:hover:text-red-500 hover:placeholder:text-red-500"),
+        "placeholder:hover:text-red-500 hover:placeholder:text-red-500"
+    );
+    // selection:hover vs hover:selection
+    assert_eq!(
+        tw_merge("selection:hover:bg-red-500 hover:selection:bg-red-500"),
+        "selection:hover:bg-red-500 hover:selection:bg-red-500"
+    );
+}
+
+#[test]
 fn test_negative_values() {
     let class = "top-12 -top-69";
     let result = tw_merge(class);

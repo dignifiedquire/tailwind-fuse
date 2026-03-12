@@ -164,16 +164,20 @@ fn cross_group_pairs_coexist() {
         let result_classes: Vec<&str> = result.split_whitespace().collect();
         let has_both = result_classes.contains(&a.as_str()) && result_classes.contains(&b.as_str());
         if !has_both {
-            // Check if this is a legitimate collision relationship by testing the
-            // reverse order: if later-wins holds in both directions, these classes
-            // have a real conflict (shorthand/longhand) which is correct behavior.
+            // If b (later class) is kept and a was dropped, this is a legitimate
+            // shorthand→longhand override (e.g., skew overrides skew-y).
+            if result_classes.contains(&b.as_str()) {
+                continue;
+            }
+            // b (later class) was dropped — check reverse to distinguish real
+            // bidirectional conflicts from bugs.
             let reverse_input = format!("{b} {a}");
             let reverse_result = tw_merge(&reverse_input);
             let reverse_classes: Vec<&str> = reverse_result.split_whitespace().collect();
             let reverse_has_both =
                 reverse_classes.contains(&a.as_str()) && reverse_classes.contains(&b.as_str());
             if reverse_has_both {
-                // Only one direction drops a class — likely a bug, not a collision relationship
+                // Only the forward direction dropped the later class — likely a bug
                 failures.push(format!(
                     "  {}/{}: tw_merge(\"{input}\") = \"{result}\"",
                     group_keys[gi], group_keys[gj]

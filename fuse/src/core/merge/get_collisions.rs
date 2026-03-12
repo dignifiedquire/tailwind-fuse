@@ -87,6 +87,8 @@ pub(crate) fn get_collisions(collision_id: &str) -> Option<Vec<&'static str>> {
         "rounded-l" => Some(vec!["rounded-tl", "rounded-bl"]),
         "border-spacing" => Some(vec!["border-spacing-x", "border-spacing-y"]),
         "border-w" => Some(vec![
+            "border-w-x",
+            "border-w-y",
             "border-w-s",
             "border-w-e",
             "border-w-t",
@@ -99,6 +101,8 @@ pub(crate) fn get_collisions(collision_id: &str) -> Option<Vec<&'static str>> {
         "border-w-x" => Some(vec!["border-w-r", "border-w-l"]),
         "border-w-y" => Some(vec!["border-w-t", "border-w-b"]),
         "border-color" => Some(vec![
+            "border-color-x",
+            "border-color-y",
             "border-color-t",
             "border-color-r",
             "border-color-b",
@@ -138,8 +142,8 @@ pub(crate) fn get_collisions(collision_id: &str) -> Option<Vec<&'static str>> {
         "scale" => Some(vec!["scale-x", "scale-y", "scale-z"]),
         // v4: skew shorthand overrides x/y
         "skew" => Some(vec!["skew-x", "skew-y"]),
-        // v4: translate shorthand overrides x/y
-        "translate" => Some(vec!["translate-x", "translate-y"]),
+        // v4: translate shorthand overrides x/y/z
+        "translate" => Some(vec!["translate-x", "translate-y", "translate-z"]),
         // v4: contain shorthand overrides individual containment
         "contain" => Some(vec![
             "contain-layout",
